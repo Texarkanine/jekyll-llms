@@ -47,6 +47,17 @@ class JekyllLlmsIndexTest < Minitest::Test
     TEXT
   end
 
+  def test_keeps_original_links_for_non_markdown_sources
+    content = Jekyll::Llms::Index.new(
+      site: site({}),
+      entries: [entry(section: "pages", title: "Home", description: "", url: "/", relative_path: "index.html")],
+      markdown: true
+    ).content
+
+    assert_includes content, "- [Home](https://example.com/base/)"
+    refute_includes content, "index.md"
+  end
+
   private
 
   def site(config)
@@ -57,14 +68,19 @@ class JekyllLlmsIndexTest < Minitest::Test
     Struct.new(:config).new(defaults.merge(config))
   end
 
-  def entry(section:, title:, description:, url:)
+  def entry(section:, title:, description:, url:, relative_path: markdown_relative_path(url))
     item = Struct.new(:url, :relative_path, :data, :name).new(
       url,
-      "#{url.delete_prefix("/")}.md",
+      relative_path,
       { "title" => title, "description" => description },
       "entry.md"
     )
 
     Jekyll::Llms::Entry.new(site: site({}), item: item, section: section)
+  end
+
+  def markdown_relative_path(url)
+    path = url.delete_prefix("/")
+    path.empty? ? "index.md" : "#{path}.md"
   end
 end

@@ -6,6 +6,7 @@ module Jekyll
       attr_reader :item, :section, :url
 
       def initialize(site:, item:, section:)
+        @site = site
         @item = item
         @section = section
         @url = Url.new(site: site, item: item)
@@ -17,6 +18,10 @@ module Jekyll
 
       def enabled?
         item.data.fetch("llms", true)
+      end
+
+      def markdown_source?
+        markdown_extensions.include?(File.extname(item.relative_path).delete_prefix("."))
       end
 
       def excluded_by?(patterns)
@@ -33,6 +38,12 @@ module Jekyll
       end
 
       private
+
+      attr_reader :site
+
+      def markdown_extensions
+        site.config.fetch("markdown_ext", Configuration::DEFAULTS.fetch("markdown_ext")).split(",")
+      end
 
       def fallback_title
         if item.respond_to?(:basename_without_ext)

@@ -36,7 +36,7 @@ module Jekyll
       end
 
       def entry_line(entry)
-        line = "- [#{entry.title}](#{entry.url.absolute(markdown: markdown)})"
+        line = "- [#{entry.title}](#{entry.url.absolute(markdown: markdown && entry.markdown_source?)})"
         entry.description.empty? ? line : "#{line}: #{entry.description}"
       end
 

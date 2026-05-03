@@ -7,7 +7,7 @@ module Jekyll
         "markdown" => true,
         "llms_txt" => true,
         "include" => %w[pages posts],
-        "exclude" => [],
+        "exclude" => ["/README.md", "/CHANGELOG.md"],
       }.freeze
 
       def self.from_site(site)

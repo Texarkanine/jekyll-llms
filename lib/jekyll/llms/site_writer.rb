@@ -27,13 +27,17 @@ module Jekyll
       end
 
       def write_markdown
-        entries.each do |entry|
+        markdown_entries.each do |entry|
           files.write(entry.url.markdown_path, MarkdownSource.new(site: site, item: entry.item).content)
         end
       end
 
       def write_html_links
-        HtmlLinker.new(site: site, entries: entries).write
+        HtmlLinker.new(site: site, entries: markdown_entries).write
+      end
+
+      def markdown_entries
+        entries.select(&:markdown_source?)
       end
     end
   end

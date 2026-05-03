@@ -60,6 +60,54 @@ class JekyllLlmsSiteWriterTest < Minitest::Test
     end
   end
 
+  def test_uses_original_links_for_html_sources
+    build_site({}, {
+      "_layouts/default.html" => default_layout,
+      "index.html" => <<~HTML,
+        ---
+        layout: default
+        title: Home
+        description: Home page.
+        ---
+
+        <h1>Home</h1>
+      HTML
+    }) do |_site, destination|
+      assert_includes read_output(destination, "llms.txt"), "- [Home](https://example.com/base/): Home page."
+      refute_path_exists output_path(destination, "index.md")
+      refute_includes read_output(destination, "index.html"), %(type="text/markdown")
+    end
+  end
+
+  def test_excludes_project_docs_by_default
+    build_site({ "llms" => :absent }, {
+      "_layouts/default.html" => default_layout,
+      "README.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: README
+        description: Should not be published to llms.txt.
+        ---
+
+        Secret-adjacent setup notes.
+      MARKDOWN
+      "CHANGELOG.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Changelog
+        description: Release notes should not be published to llms.txt.
+        ---
+
+        Internal release notes.
+      MARKDOWN
+    }) do |_site, destination|
+      refute_includes read_output(destination, "llms.txt"), "README"
+      refute_includes read_output(destination, "llms.txt"), "Changelog"
+      refute_path_exists output_path(destination, "README.md")
+      refute_path_exists output_path(destination, "CHANGELOG.md")
+    end
+  end
+
   private
 
   def default_layout

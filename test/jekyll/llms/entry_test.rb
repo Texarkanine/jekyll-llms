@@ -57,6 +57,14 @@ class JekyllLlmsEntryTest < Minitest::Test
     refute_predicate entry(item: item(data: { "llms" => false })), :enabled?
   end
 
+  def test_markdown_source_matches_configured_markdown_extensions
+    assert_predicate entry(item: item(relative_path: "page.md")), :markdown_source?
+    assert_predicate entry(item: item(relative_path: "page.markdown")), :markdown_source?
+    refute_predicate entry(item: item(relative_path: "page.mark")), :markdown_source?
+    refute_predicate entry(item: item(relative_path: "page.html")), :markdown_source?
+    refute_predicate entry(item: item(relative_path: "page.md"), site_config: { "markdown_ext" => "markdown" }), :markdown_source?
+  end
+
   def test_excluded_by_checks_url_candidates
     entry = entry(item: item(url: "/docs", relative_path: "docs.md"))
 
@@ -67,15 +75,15 @@ class JekyllLlmsEntryTest < Minitest::Test
 
   private
 
-  def entry(item:, section: "pages")
-    Jekyll::Llms::Entry.new(site: site, item: item, section: section)
+  def entry(item:, section: "pages", site_config: {})
+    Jekyll::Llms::Entry.new(site: site(site_config), item: item, section: section)
   end
 
   def item(url: "/page", relative_path: "page.md", data: {}, name: "page.md")
     Struct.new(:url, :relative_path, :data, :name).new(url, relative_path, data, name)
   end
 
-  def site
-    Struct.new(:config).new({ "url" => "https://example.com", "baseurl" => "" })
+  def site(config = {})
+    Struct.new(:config).new({ "url" => "https://example.com", "baseurl" => "" }.merge(config))
   end
 end

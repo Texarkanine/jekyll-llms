@@ -24,10 +24,10 @@ plugins:
 ## Output
 
 - `/llms.txt`: Markdown index of included entries.
-- `*.md`: source-body sidecars for included entries.
+- `*.md`: source-body sidecars for included Markdown-source entries.
 - HTML `<link rel="alternate" type="text/markdown" href="...">` tags pointing to sidecars.
 
-Sidecars are source bodies, not HTML-to-Markdown conversions. Front matter is removed. Liquid is rendered unless `render_with_liquid: false` is set.
+Sidecars are source bodies, not HTML-to-Markdown conversions. Front matter is removed. Liquid is rendered unless `render_with_liquid: false` is set. HTML-source entries stay linked by their original URLs.
 
 ## Configuration
 
@@ -39,14 +39,16 @@ llms:
     - pages
     - posts
   exclude:
+    - /README.md
+    - /CHANGELOG.md
     - /404.html
     - /assets/**
 ```
 
-- `markdown`: generate sidecars, link `llms.txt` to sidecars, and add HTML alternate links. Default: `true`.
+- `markdown`: generate sidecars for Markdown sources, link `llms.txt` to those sidecars, and add HTML alternate links. Default: `true`.
 - `llms_txt`: generate `/llms.txt`. Default: `true`.
 - `include`: `pages`, `posts`, and output collection names. Default: `[pages, posts]`.
-- `exclude`: URL, Markdown path, or source path globs. Default: `[]`.
+- `exclude`: URL, Markdown path, or source path globs. Default: `[/README.md, /CHANGELOG.md]`.
 
 Per-entry opt-out:
 

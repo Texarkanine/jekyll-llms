@@ -20,7 +20,7 @@ Gem::Specification.new do |spec|
     "source_code_uri" => spec.homepage
   }
 
-  spec.files = Dir["lib/**/*", "README.md", "LICENSE.txt"]
+  spec.files = Dir["lib/**/*", "README.md", "CHANGELOG.md", "LICENSE.txt"]
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency "jekyll", ">= 4.0", "< 5.0"

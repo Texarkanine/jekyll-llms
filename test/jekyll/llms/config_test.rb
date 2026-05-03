@@ -11,7 +11,7 @@ class JekyllLlmsConfigTest < Minitest::Test
     assert_predicate config, :markdown?
     assert_predicate config, :llms_txt?
     assert_equal %w[pages posts], config.includes
-    assert_equal [], config.excludes
+    assert_equal ["/README.md", "/CHANGELOG.md"], config.excludes
   end
 
   def test_uses_defaults_when_site_config_is_nil
@@ -20,7 +20,7 @@ class JekyllLlmsConfigTest < Minitest::Test
     assert_predicate config, :markdown?
     assert_predicate config, :llms_txt?
     assert_equal %w[pages posts], config.includes
-    assert_equal [], config.excludes
+    assert_equal ["/README.md", "/CHANGELOG.md"], config.excludes
   end
 
   def test_merges_user_values_over_defaults

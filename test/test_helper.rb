@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
-require "simplecov"
+unless defined?(Mutant)
+  require "simplecov"
 
-SimpleCov.start do
-  add_filter "/test/"
-  minimum_coverage 100
-  track_files "lib/**/*.rb"
+  SimpleCov.start do
+    add_filter "/test/"
+    minimum_coverage 100
+    track_files "lib/**/*.rb"
+  end
 end
 
 original_verbose = $VERBOSE
