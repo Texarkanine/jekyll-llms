@@ -68,7 +68,7 @@ module Jekyll
       end
 
       def excluded?(entry, patterns)
-        candidates = [entry.item.url, markdown_url(entry.item), source_path(entry.item)].compact
+        candidates = [entry.item.url, markdown_url(entry.item), relative_source_path(entry.item), source_path(entry.item)].compact
 
         patterns.any? do |pattern|
           candidates.any? do |candidate|
@@ -161,6 +161,12 @@ module Jekyll
       def source_path(item)
         return item.path if item.respond_to?(:path) && File.file?(item.path)
         return item.site.in_source_dir(item.relative_path) if item.respond_to?(:relative_path)
+      end
+
+      def relative_source_path(item)
+        return unless item.respond_to?(:relative_path)
+
+        "/#{item.relative_path.delete_prefix("/")}"
       end
 
       def markdown_url(item)
