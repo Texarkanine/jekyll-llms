@@ -15,9 +15,10 @@ $VERBOSE = original_verbose
 
 require "fileutils"
 require "minitest/autorun"
+require "mutant/minitest/coverage"
 require "tmpdir"
 
-require "jekyll-llms"
+require_relative "support/mutant_setup"
 
 Jekyll.logger.log_level = :error
 

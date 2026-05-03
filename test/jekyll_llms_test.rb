@@ -3,6 +3,8 @@
 require "test_helper"
 
 class JekyllLlmsTest < Minitest::Test
+  cover "Jekyll::Llms*"
+
   def test_generates_llms_txt_and_markdown_sidecars
     build_site({}, default_files) do |_site, destination|
       llms_txt = read_output(destination, "llms.txt")
