@@ -13,6 +13,12 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://github.com/skatkov/jekyll-llms"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.0"
+  spec.metadata = {
+    "allowed_push_host" => "https://rubygems.org",
+    "homepage_uri" => spec.homepage,
+    "rubygems_mfa_required" => "true",
+    "source_code_uri" => spec.homepage
+  }
 
   spec.files = Dir["lib/**/*", "README.md", "LICENSE.txt"]
   spec.require_paths = ["lib"]
