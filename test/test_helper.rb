@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+require "simplecov"
+
+SimpleCov.start do
+  add_filter "/test/"
+  minimum_coverage 100
+  track_files "lib/**/*.rb"
+end
+
+original_verbose = $VERBOSE
+$VERBOSE = nil
+load File.expand_path("../lib/jekyll/llms/version.rb", __dir__)
+$VERBOSE = original_verbose
+
 require "fileutils"
 require "minitest/autorun"
 require "tmpdir"

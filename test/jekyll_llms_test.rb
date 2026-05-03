@@ -94,6 +94,86 @@ class JekyllLlmsTest < Minitest::Test
     end
   end
 
+  def test_includes_output_collections_and_fallback_titles
+    config = {
+      "collections" => {
+        "guides" => {
+          "output" => true,
+          "permalink" => "/guides/:name",
+        },
+      },
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "include" => ["pages", "guides"],
+      },
+    }
+
+    build_site(config, {
+      "untitled.html" => <<~HTML,
+        ---
+        ---
+
+        <p>Untitled page.</p>
+      HTML
+      "data.json" => <<~JSON,
+        ---
+        title: Data
+        ---
+
+        {"name":"fixture"}
+      JSON
+      "_guides/intro.md" => <<~MARKDOWN,
+        ---
+        title: ""
+        ---
+
+        Collection body.
+      MARKDOWN
+    }) do |_site, destination|
+      llms_txt = read_output(destination, "llms.txt")
+
+      assert_includes llms_txt, "## Guides"
+      assert_includes llms_txt, "- [untitled](https://example.com/base/untitled.md)"
+      assert_includes llms_txt, "- [Data](https://example.com/base/data.md)"
+      assert_includes llms_txt, "- [intro](https://example.com/base/guides/intro.md)"
+
+      assert_equal "<p>Untitled page.</p>\n", read_output(destination, "untitled.md")
+      assert_equal "{\"name\":\"fixture\"}\n", read_output(destination, "data.md")
+      assert_equal "Collection body.\n", read_output(destination, "guides/intro.md")
+    end
+  end
+
+  def test_skips_non_output_collections
+    config = {
+      "collections" => {
+        "components" => {
+          "output" => false,
+        },
+      },
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "include" => ["components"],
+      },
+    }
+
+    build_site(config, {
+      "_components/card.md" => <<~MARKDOWN,
+        ---
+        title: Card
+        ---
+
+        Card body.
+      MARKDOWN
+    }) do |_site, destination|
+      llms_txt = read_output(destination, "llms.txt")
+
+      refute_includes llms_txt, "Card"
+      refute_path_exists output_path(destination, "components/card.md")
+    end
+  end
+
   private
 
   def default_files
