@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.2.0
+
+### Fixed
+
+- Ensure that one invalid markdown file will not block publishing of all markdown files.
+
 ## 0.1.1
 
 ### Changed
