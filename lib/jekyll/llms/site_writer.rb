@@ -70,7 +70,12 @@ module Jekyll
       end
 
       def normalized_path_prefix(prefix)
-        prefix.end_with?("/") ? prefix : "#{prefix}/"
+        segments = prefix.split("/").reject(&:empty?)
+        if segments.empty? || segments.any? { |segment| segment == "." || segment == ".." }
+          raise ArgumentError, "Invalid LLMs scope path_prefix: #{prefix.inspect}"
+        end
+
+        "/#{segments.join("/")}/"
       end
 
       def full_entry_pairs(entry_list)

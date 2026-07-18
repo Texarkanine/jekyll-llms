@@ -27,6 +27,7 @@ Jekyll.logger.log_level = :error
 class Minitest::Test
   def teardown
     Jekyll::Llms.reset_scope_builders!
+    super
   end
 
   private

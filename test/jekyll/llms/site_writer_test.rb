@@ -569,6 +569,89 @@ class JekyllLlmsSiteWriterTest < Minitest::Test
     assert_includes error.message, "/category/fable/"
   end
 
+  # Dot/dot-dot segments and empty/root prefixes must be rejected before writing.
+  def test_rejects_invalid_scope_path_prefixes
+    [
+      "",
+      "/",
+      "/tags/../evil/",
+      "/tags/./fable/",
+    ].each do |path_prefix|
+      Jekyll::Llms.reset_scope_builders!
+      register_title_scope_builder(path_prefix: path_prefix, title: "bad", match_title: "Fable Post")
+
+      error = assert_raises(ArgumentError) do
+        build_site({
+          "llms" => {
+            "markdown" => true,
+            "llms_txt" => true,
+            "include" => %w[posts],
+            "exclude" => [],
+          },
+        }, {
+          "_layouts/default.html" => default_layout,
+          "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+            ---
+            layout: default
+            title: Fable Post
+            ---
+
+            Fable body.
+          MARKDOWN
+        }) do |_site, _destination|
+        end
+      end
+
+      assert_includes error.message, "Invalid LLMs scope path_prefix:"
+      assert_includes error.message, path_prefix.inspect
+    end
+  end
+
+  # Empty path segments (e.g. //tags/fable) must collapse to the same prefix as /tags/fable/.
+  def test_collapses_empty_path_segments_for_duplicate_detection
+    Jekyll::Llms.register_scope_builder do |_site, _config, entries|
+      scoped = entries.select { |entry| entry.title == "Fable Post" }
+      [
+        Jekyll::Llms::Scope.new(
+          path_prefix: "//tags/fable",
+          title: "a",
+          description: "A",
+          entries: scoped
+        ),
+        Jekyll::Llms::Scope.new(
+          path_prefix: "/tags/fable/",
+          title: "b",
+          description: "B",
+          entries: scoped
+        ),
+      ]
+    end
+
+    error = assert_raises(ArgumentError) do
+      build_site({
+        "llms" => {
+          "markdown" => true,
+          "llms_txt" => true,
+          "include" => %w[posts],
+          "exclude" => [],
+        },
+      }, {
+        "_layouts/default.html" => default_layout,
+        "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+          ---
+          layout: default
+          title: Fable Post
+          ---
+
+          Fable body.
+        MARKDOWN
+      }) do |_site, _destination|
+      end
+    end
+
+    assert_includes error.message, "/tags/fable/"
+  end
+
   def test_omits_excluded_posts_from_scoped_indexes
     build_site({
       "llms" => {

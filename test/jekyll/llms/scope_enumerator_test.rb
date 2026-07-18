@@ -192,6 +192,26 @@ class JekyllLlmsScopeEnumeratorTest < Minitest::Test
     refute_includes scopes.map(&:path_prefix), "/missing/"
   end
 
+  # Duplicate include labels must not emit duplicate collection scopes (EntrySet tolerates dupes).
+  def test_deduplicates_repeated_collection_include_labels
+    garden_doc = item(url: "/garden/n")
+    garden_entry = entry_for(garden_doc, section: "garden")
+    site = site(
+      collections: { "garden" => collection(docs: [garden_doc], write: true) },
+      config: { "url" => "https://example.com", "baseurl" => "" }
+    )
+
+    scopes = scopes_for(
+      site: site,
+      config: config(collection_indexes: true, include: %w[garden garden]),
+      entries: [garden_entry]
+    )
+
+    assert_equal 1, scopes.length
+    assert_equal "/garden/", scopes.first.path_prefix
+    assert_equal [garden_entry], scopes.first.entries
+  end
+
   private
 
   def scopes_for(site:, config:, entries:)

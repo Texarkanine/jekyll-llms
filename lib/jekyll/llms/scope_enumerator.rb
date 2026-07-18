@@ -37,7 +37,7 @@ module Jekyll
       def collection_scopes
         return [] unless config.collection_indexes?
 
-        config.includes.filter_map do |label|
+        config.includes.uniq.filter_map do |label|
           next if %w[pages posts].include?(label)
 
           collection = site.collections[label]

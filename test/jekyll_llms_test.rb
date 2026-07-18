@@ -21,6 +21,16 @@ class JekyllLlmsTest < Minitest::Test
     assert_equal [first, second], Jekyll::Llms.scope_builders
   end
 
+  # Without a block, fail immediately instead of appending nil for a later NoMethodError.
+  def test_register_scope_builder_requires_a_block
+    error = assert_raises(ArgumentError) do
+      Jekyll::Llms.register_scope_builder
+    end
+
+    assert_match(/block/i, error.message)
+    assert_equal [], Jekyll::Llms.scope_builders
+  end
+
   def test_reset_scope_builders_clears_registry
     Jekyll::Llms.register_scope_builder { [] }
 

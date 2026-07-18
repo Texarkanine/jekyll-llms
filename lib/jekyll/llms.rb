@@ -29,7 +29,10 @@ module Jekyll
       end
 
       # Appends a scope builder. Returns the block for optional disposal by the caller.
+      # Raises ArgumentError when called without a block.
       def register_scope_builder(&block)
+        raise ArgumentError, "A block is required" unless block_given?
+
         scope_builders << block
         block
       end
