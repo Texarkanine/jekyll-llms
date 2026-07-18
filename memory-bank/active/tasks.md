@@ -116,30 +116,33 @@ None unresolved — no creative phase re-entry required.
 
 ## Implementation Plan
 
-1. **Config flags + category template** (TDD)
-    - Files: `lib/jekyll/llms/config.rb`, `test/jekyll/llms/config_test.rb`
-    - Changes: DEFAULTS for three booleans; predicates; `category_path_template` reading archives then `/category/:name/`
+Each numbered unit below is one TDD cycle: **failing tests first**, then production code, then refactor. Do not implement a unit’s production files before its tests exist and fail for the right reason.
+
+1. **Config flags + category template**
+    - Tests first: `test/jekyll/llms/config_test.rb` — defaults false for new flags; merged true; `category_path_template` → `/category/:name/` without archives; uses archives permalink when set
+    - Then code: `lib/jekyll/llms/config.rb` — DEFAULTS + predicates + template reader
     - Creative ref: superseded path decision (see Creative Supersession)
 
-2. **Index title/description overrides** (TDD)
-    - Files: `lib/jekyll/llms/index.rb`, `test/jekyll/llms/index_test.rb`
-    - Changes: `initialize(..., title: nil, description: nil)` falling back to site config
+2. **Index title/description overrides**
+    - Tests first: `test/jekyll/llms/index_test.rb` — override title/description appear; omit empty description; no-override keeps site title/description
+    - Then code: `lib/jekyll/llms/index.rb` — optional kwargs with site-config fallback
 
-3. **FullIndex** (TDD)
-    - Files: `lib/jekyll/llms/full_index.rb` (new), `test/jekyll/llms/full_index_test.rb` (new)
-    - Changes: `content` renderer; caller supplies title + entries with bodies (or FullIndex calls MarkdownSource — prefer SiteWriter passes precomputed body hash / only markdown entries with content strings to keep FullIndex pure)
+3. **FullIndex**
+    - Tests first: `test/jekyll/llms/full_index_test.rb` (new) — H1 title; H2 + body per markdown entry; skips entries without bodies; blank line between entries
+    - Then code: `lib/jekyll/llms/full_index.rb` (new) — pure renderer over title + `[[entry, body], ...]` (or equivalent)
+    - Wire require in `lib/jekyll/llms.rb` only when SiteWriter needs it (step 5 is fine)
 
-4. **Scope + ScopeEnumerator** (TDD)
-    - Files: `lib/jekyll/llms/scope.rb`, `lib/jekyll/llms/scope_enumerator.rb` (new), tests
-    - Changes: enumerate category/collection scopes; filter entries; build path prefixes; slugify `:name`
+4. **Scope + ScopeEnumerator**
+    - Tests first: `test/jekyll/llms/scope_enumerator_test.rb` (new) — category scopes from `site.categories` ∩ entries; slugified path; archives template; collection scopes for included writeable labels; flags off → `[]`; zero entries → omitted
+    - Then code: `lib/jekyll/llms/scope.rb`, `lib/jekyll/llms/scope_enumerator.rb` (new)
 
-5. **SiteWriter orchestration** (TDD)
-    - Files: `lib/jekyll/llms/site_writer.rb`, `test/jekyll/llms/site_writer_test.rb`, `lib/jekyll/llms.rb`
-    - Changes: write root full; write scoped index/full; require new files
+5. **SiteWriter orchestration**
+    - Tests first: `test/jekyll/llms/site_writer_test.rb` — root `llms-full.txt`; category/collection dest paths + content; archives path; flags false → no new artifacts; excluded post absent from scoped index
+    - Then code: `lib/jekyll/llms/site_writer.rb`, requires in `lib/jekyll/llms.rb`
 
 6. **README**
     - Files: `README.md`
-    - Changes: document flags + category path / archives soft-read
+    - Changes: document flags + category path / archives soft-read (docs-only; no test cycle)
 
 7. **Verification**
     - `bundle exec rake test` then `bundle exec mutant run`
@@ -162,6 +165,14 @@ No new technology - validation not required
 - **Soft-read treated as hard dependency**: Tests use plain config hashes; no gem add in gemspec.
 - **PR bloat (authors, tags, HTML archive links)**: Explicit non-goals in brief; preflight checks scope.
 
+## Preflight Findings
+
+- PASS — TDD encoding strengthened (per-unit tests-first wording)
+- PASS — Conventions align (`lib/jekyll/llms/*.rb`, `test/jekyll/llms/*_test.rb`, Config DEFAULTS bag, post-write SiteWriter)
+- PASS — No overlapping FullIndex/Scope implementations in tree
+- PASS — Requirements map to steps 1–6; creative path shape explicitly superseded
+- ADVISORY: Custom jekyll-archives `slug_mode` ignored in v1 (document in README); revisit only if an operator hits it
+
 ## Status
 
 - [x] Component analysis complete
@@ -170,6 +181,6 @@ No new technology - validation not required
 - [x] Implementation plan complete
 - [x] Technology validation complete
 - [x] Pre-Mortem complete
-- [ ] Preflight
+- [x] Preflight
 - [ ] Build
 - [ ] QA

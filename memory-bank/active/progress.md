@@ -28,3 +28,14 @@ Implement optional root `llms-full.txt` plus per-category and per-collection sco
     - FullIndex kept pure; SiteWriter supplies markdown bodies via existing MarkdownSource path
 * Insights
     - Prior creative was useful architecture guidance; treating it as frozen config would have shipped YAGNI
+
+## 2026-07-17 - PREFLIGHT - COMPLETE
+
+* Work completed
+    - Validated plan against codebase (no existing Scope/FullIndex; patterns match)
+    - Amended Implementation Plan with explicit tests-first wording per unit
+    - Wrote `.preflight-status` = PASS
+* Decisions made
+    - Advisory only: custom archives `slug_mode` out of scope for v1; note in README during build
+* Insights
+    - L3 gate to build is operator `/niko-build` after preflight PASS
