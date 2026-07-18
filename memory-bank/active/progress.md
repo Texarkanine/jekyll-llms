@@ -1,8 +1,8 @@
 # Progress
 
-Harden `SiteWriter` scoped writes per PR #2: honor `llms_txt` for scoped indexes, normalize `path_prefix`, reject duplicate prefixes; document flag semantics; push to `cats-and-colls` then merge code-only into `cats-and-colls-polish`.
+Rework of `pr2-site-writer-hardening`: dedupe collection include labels in `ScopeEnumerator`, canonicalize/validate scope `path_prefix` in `SiteWriter`, and call `super` in test teardown; push to `cats-and-colls` then cherry-pick onto `cats-and-colls-polish`.
 
-**Complexity:** Level 1
+**Complexity:** Level 2
 
 ## 2026-07-18 - COMPLEXITY-ANALYSIS - COMPLETE
 
@@ -47,3 +47,12 @@ Harden `SiteWriter` scoped writes per PR #2: honor `llms_txt` for scoped indexes
     - Deliver on `cats-and-colls`, then cherry-pick onto `cats-and-colls-polish`
 * Insights
     - Prior QA PASS stands; this rework addresses new review findings on the same hardening surface
+
+## 2026-07-18 - COMPLEXITY-ANALYSIS - COMPLETE
+
+* Work completed
+    - Classified rework as Level 2 (multi-component correctness: ScopeEnumerator, SiteWriter, test helper)
+* Decisions made
+    - Task id: `pr2-site-writer-hardening-rework`
+* Insights
+    - Same delivery path as prior task: push `cats-and-colls`, cherry-pick product fix to polish
