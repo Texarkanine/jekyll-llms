@@ -62,3 +62,14 @@ Implement optional root `llms-full.txt` plus per-category and per-collection sco
     - No substantive rework required
 * Insights
     - Double MarkdownSource read when both markdown + llms_full is acceptable KISS for v1
+
+## 2026-07-17 - REFLECT - COMPLETE
+
+* Work completed
+    - Wrote `memory-bank/active/reflection/reflection-category-collection-llms-indexes.md`
+    - Reconciled productContext (scoped/full use case) and systemPatterns (FullIndex/ScopeEnumerator + archives path vs membership)
+* Decisions made
+    - techContext unchanged
+* Insights
+    - Layered identical guards survive mutants; one owner per rule is cheaper
+    - Explicit creative supersession in the plan prevented path-shape drift

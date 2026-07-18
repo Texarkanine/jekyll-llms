@@ -7,6 +7,7 @@ Jekyll site operators who want LLM crawlers and tools to consume a site's conten
 ## Use Cases
 
 - Publish a site-wide `llms.txt` index that lists included content with stable URLs.
+- Optionally publish a concatenated `llms-full.txt` corpus and per-category / per-collection scoped indexes beside human archive URLs.
 - Ship Markdown sidecars next to HTML pages so agents can read source bodies instead of rendered markup.
 - Point HTML pages at those sidecars via standard alternate links.
 - Opt specific pages out, and include or exclude paths / collections without rewriting the site structure.

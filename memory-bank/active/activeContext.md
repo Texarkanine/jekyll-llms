@@ -1,12 +1,11 @@
 # Active Context
 
 ## Current Task: category-collection-llms-indexes
-**Phase:** QA - COMPLETE
+**Phase:** REFLECT - COMPLETE
 
 ## What Was Done
-- Semantic QA against plan/brief/creative supersession
-- Trivial README intro sync with Output section
-- Confirmed no `category_permalink`, no author/tag/HTML-archive scope, EntrySet-once filtering
+- Reflection written; productContext + systemPatterns surgically updated for scoped/full indexes
+- QA and build both PASS; coverage 100% line + mutation
 
 ## Next Step
-- Reflect via `/niko-reflect` (auto-transition)
+- Operator runs `/niko-archive` to archive and finalize
