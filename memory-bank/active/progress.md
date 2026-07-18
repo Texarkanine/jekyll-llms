@@ -26,3 +26,13 @@ Harden `SiteWriter` scoped writes per PR #2: honor `llms_txt` for scoped indexes
     - Used `group_by` for uniqueness instead of a sentinel hash value (Mutant)
 * Insights
     - Duplicate detection must normalize prefixes so `/foo` and `/foo/` collide
+
+## 2026-07-18 - QA - COMPLETE
+
+* Work completed
+    - Semantic review vs project brief: all requirements implemented; README updated; no debris
+    - `.qa-validation-status` = PASS
+* Decisions made
+    - No substantive QA failures; persistent files unchanged (flag semantics belong in README, not systemPatterns)
+* Insights
+    - None
