@@ -35,25 +35,25 @@ Address CodeRabbit review items 1.2, 2, 3, and 4: fail-fast `register_scope_buil
 
 ## Implementation Plan
 
-1. **Fail-fast register without block (item 1.2)**
+1. **Fail-fast register without block (item 1.2)** ✅
    - Files: `test/jekyll_llms_test.rb`, `lib/jekyll/llms.rb`
-   - Changes: failing test for no-block → `ArgumentError`; implement `raise ArgumentError, "…" unless block`; keep return/append behavior
+   - Changes: failing test for no-block → `ArgumentError`; implement `raise ArgumentError, "…" unless block_given?`; keep return/append behavior
 
-2. **Dedupe collection include labels (item 2)**
-   - Files: `test/jekyll/llms/scope_enumerator_test.rb`, optionally `test/jekyll/llms/site_writer_test.rb` for write-path smoke, `lib/jekyll/llms/scope_enumerator.rb`
+2. **Dedupe collection include labels (item 2)** ✅
+   - Files: `test/jekyll/llms/scope_enumerator_test.rb`, `lib/jekyll/llms/scope_enumerator.rb`
    - Changes: test with `include: %w[garden garden]`; implement `config.includes.uniq.filter_map`
 
-3. **Canonicalize/validate path prefixes (item 3)**
+3. **Canonicalize/validate path prefixes (item 3)** ✅
    - Files: `test/jekyll/llms/site_writer_test.rb`, `lib/jekyll/llms/site_writer.rb`
    - Changes: expand `normalized_path_prefix` to split on `/`, reject empty-after-normalize (root), reject `.` and `..` segments, rejoin with leading `/` and trailing `/`; use for both uniqueness and write paths; raise `ArgumentError` with prefix in message
 
-4. **Call `super` in teardown (item 4)**
-   - Files: `lib/jekyll/llms/test_isolation.rb` (or inline module in `test/test_helper.rb` if keeping test-only), `test/test_helper.rb`, `test/jekyll/llms/test_isolation_test.rb` (or `test/jekyll_llms_test.rb`)
-   - Changes: extract `module Jekyll::Llms::TestIsolation` with `teardown` that resets builders then `super`; `Minitest::Test.include` it; unit-test via fake parent so Mutant cannot delete `super`. Prefer keeping the module under `test/` (not shipped in the gem) unless the gem already packages test helpers — survey `gemspec` first; default to test-only module in `test/support/`.
+4. **Call `super` in teardown (item 4)** ✅
+   - Files: `test/test_helper.rb`
+   - Changes: add `super` after `reset_scope_builders!` (Mutant does not subject `Minitest::Test`; no extracted module needed)
 
-5. **Verify**
-   - `bundle exec rake test` (100% line coverage)
-   - `bundle exec mutant run` (100% mutation coverage; prefer `--fail-fast` while iterating)
+5. **Verify** ✅
+   - `bundle exec rake test` — 100% line coverage (89 runs)
+   - `bundle exec mutant run` — 100% mutation coverage (2161 kills)
 
 6. **Delivery**
    - Push `cats-and-colls`
@@ -88,7 +88,7 @@ No new technology - validation not required
 - [x] Technology validation complete
 - [x] Pre-Mortem complete
 - [x] Preflight
-- [ ] Build
+- [x] Build
 - [ ] QA
 
 ## Preflight Amendments

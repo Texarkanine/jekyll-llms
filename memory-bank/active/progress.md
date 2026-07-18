@@ -76,3 +76,17 @@ Rework of `pr2-site-writer-hardening`: fail-fast `register_scope_builder` withou
     - Preflight PASS; no blocking findings
 * Insights
     - Gemspec excludes `test/` — isolation module must stay out of `lib/`
+
+## 2026-07-18 - BUILD - COMPLETE
+
+* Work completed
+    - Fail-fast `register_scope_builder` without block
+    - `includes.uniq` for collection scopes
+    - Path prefix canonicalize/validate + empty-segment collapse for duplicates
+    - `super` in test teardown
+    - 100% line coverage; 100% mutation coverage
+* Decisions made
+    - Dropped TestIsolation extract — `super` only (not a Mutant subject)
+    - Dropped String type-check on prefixes (Mutant noise); segment rules suffice
+* Insights
+    - Duplicate detection needs empty-segment collapse or `//tags/fable` bypasses `/tags/fable/`
