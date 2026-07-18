@@ -2,7 +2,7 @@
 
 Jekyll plugin that produces LLM-friendly formats alongside a regular website.
 
-Namely: `llms.txt`, optional `llms-full.txt` and scoped indexes, Markdown sidecars, and HTML alternate links to sidecars.
+Namely: `llms.txt`, optional `llms-full.txt`, Markdown sidecars, and HTML alternate links to sidecars.
 
 ## Installation
 
@@ -58,13 +58,21 @@ llms:
 - `include`: `pages`, `posts`, and output collection names. Default: `[pages, posts]`.
 - `exclude`: URL, Markdown path, or source path globs. Default: `[/README.md, /CHANGELOG.md]`.
 
-### Category paths
+Per-entry opt-out:
 
-Category files land under the category archive path. When `jekyll-archives` configures `permalinks.category`, that template is used (with `:name` replaced by `Jekyll::Utils.slugify` of the category name). Otherwise the default is `/category/:name/`, matching jekyll-archives' stock category permalink. The gem does not require jekyll-archives. Custom archives `slug_mode` values are not mirrored in v1.
+```yaml
+llms: false
+```
 
-### Custom scopes
+### Category Paths
 
-Sites can register additional scoped write targets (tags, authors, custom archives) without built-in gem support. Builders always run; they are not gated on `categories` or `collection_indexes`. Prefer subsets of the root entry list so membership stays filter-once. Empty scopes are skipped.
+Category files land under the category archive path. When [jekyll-archives](https://github.com/jekyll/jekyll-archives) configures `permalinks.category`, that template is used. Otherwise the default is `/category/:name/`, matching jekyll-archives' stock category permalink. The gem does not require jekyll-archives. Custom archives `slug_mode` values are not mirrored in v1.
+
+### Custom Scopes
+
+Sites can register additional scoped write targets (e.g. tags, authors, custom archives or aggregations).
+
+For example, if you had "tags" on posts, and URLs like `/tags/foo/` that showed a list of all posts tagged with `foo`, you could register a scope builder like this:
 
 ```ruby
 # _plugins/llms_tag_scopes.rb
@@ -84,13 +92,7 @@ Jekyll::Llms.register_scope_builder do |site, _config, entries|
 end
 ```
 
-Authors and other aggregations follow the same pattern: intersect the provided `entries` and return `Scope` objects (or an Array of them).
-
-Per-entry opt-out:
-
-```yaml
-llms: false
-```
+Then, `/tags/foo/llms.txt` would show all the posts tagged with `foo`.
 
 ## License
 
