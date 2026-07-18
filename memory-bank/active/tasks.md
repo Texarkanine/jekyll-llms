@@ -18,7 +18,7 @@ Address CodeRabbit review items 1.2, 2, 3, and 4: fail-fast `register_scope_buil
 - [Item 3]: empty or root-only prefix (`""` / `"/"`) → raises `ArgumentError`
 - [Item 3]: `/tags/fable` and `/tags/./fable/` treated as the same effective prefix for duplicate detection (if `.` is rejected at normalize, duplicate via `./` is covered by reject; if canonicalize collapses `.`, duplicate of `/tags/fable/` vs `/tags/./fable/` raises duplicate)
 - [Item 3 regression]: existing trailing-slash normalization and duplicate `/category/fable` vs `/category/fable/` still pass
-- [Item 4]: `teardown` invokes `super` (observable via a test subclass that records superclass teardown, or by asserting method source / that Minitest lifecycle still runs — prefer a tiny subclass in `test_helper` test or `jekyll_llms_test` that overrides teardown to set a flag when `super` is called from our hook)
+- [Item 4]: Extract scope-builder reset into `Jekyll::Llms::TestIsolation#teardown` (included into `Minitest::Test`); with a fake parent that records `#teardown`, including the module and calling teardown → parent ran AND builders cleared
 
 ### Edge Cases
 
@@ -48,8 +48,8 @@ Address CodeRabbit review items 1.2, 2, 3, and 4: fail-fast `register_scope_buil
    - Changes: expand `normalized_path_prefix` to split on `/`, reject empty-after-normalize (root), reject `.` and `..` segments, rejoin with leading `/` and trailing `/`; use for both uniqueness and write paths; raise `ArgumentError` with prefix in message
 
 4. **Call `super` in teardown (item 4)**
-   - Files: `test/test_helper.rb`, plus a small test that proves `super` is invoked (subclass pattern)
-   - Changes: add `super` after `reset_scope_builders!`
+   - Files: `lib/jekyll/llms/test_isolation.rb` (or inline module in `test/test_helper.rb` if keeping test-only), `test/test_helper.rb`, `test/jekyll/llms/test_isolation_test.rb` (or `test/jekyll_llms_test.rb`)
+   - Changes: extract `module Jekyll::Llms::TestIsolation` with `teardown` that resets builders then `super`; `Minitest::Test.include` it; unit-test via fake parent so Mutant cannot delete `super`. Prefer keeping the module under `test/` (not shipped in the gem) unless the gem already packages test helpers — survey `gemspec` first; default to test-only module in `test/support/`.
 
 5. **Verify**
    - `bundle exec rake test` (100% line coverage)
@@ -71,7 +71,7 @@ No new technology - validation not required
 ## Challenges & Mitigations
 
 - **Mutant on path normalization**: over-flexible canonicalize may leave mutants alive — keep validation strict (reject `.`/`..` rather than silently collapsing) so every branch is tested
-- **Item 4 observability**: hard to assert `super` without a spy — use a one-off subclass in a test that overrides `Minitest::Test#teardown` chain, or test a dedicated helper; avoid stubbing SUT
+- **Item 4 observability**: extract `TestIsolation` module under `test/support/` and unit-test `super` via a fake parent class (Mutant-visible); do not ship in the gem
 - **Cherry-pick vs polish branch drift**: polish may already have overlapping SiteWriter changes — cherry-pick and resolve conflicts carefully; prefer a single focused product commit
 
 ## Pre-Mortem
@@ -87,6 +87,10 @@ No new technology - validation not required
 - [x] Implementation plan complete
 - [x] Technology validation complete
 - [x] Pre-Mortem complete
-- [ ] Preflight
+- [x] Preflight
 - [ ] Build
 - [ ] QA
+
+## Preflight Amendments
+
+- Item 4: extract `Jekyll::Llms::TestIsolation` under `test/support/` (gemspec ships only `lib/**`); unit-test `super` via fake parent for Mutant

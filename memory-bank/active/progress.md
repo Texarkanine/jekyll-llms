@@ -66,3 +66,13 @@ Rework of `pr2-site-writer-hardening`: fail-fast `register_scope_builder` withou
     - Reject `.`/`..`/empty-root path prefixes rather than collapsing `.`
 * Insights
     - Isolate product commit for clean cherry-pick onto `cats-and-colls-polish`
+
+## 2026-07-18 - PREFLIGHT - COMPLETE
+
+* Work completed
+    - Validated TDD ordering per step; conventions and completeness OK
+    - Amended item 4: `test/support` TestIsolation module + fake-parent test for Mutant-visible `super`
+* Decisions made
+    - Preflight PASS; no blocking findings
+* Insights
+    - Gemspec excludes `test/` — isolation module must stay out of `lib/`
