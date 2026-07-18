@@ -16,3 +16,15 @@ Implement optional root `llms-full.txt` plus per-category and per-collection sco
     - Prior creative remains historical guidance; plan will supersede path/config details
 * Insights
     - jekyll-archives adds archive *pages* and URL templates, not category membership (`site.categories` is native)
+
+## 2026-07-17 - PLAN - COMPLETE
+
+* Work completed
+    - Full L3 plan in `tasks.md` (components, TDD map, ordered steps, pre-mortem)
+    - Recorded creative supersession table (path/config) while keeping Option A architecture
+* Decisions made
+    - Skip zero-entry scopes
+    - Slugify category names with `Jekyll::Utils.slugify` (archives default slug behavior; custom `slug_mode` out of scope)
+    - FullIndex kept pure; SiteWriter supplies markdown bodies via existing MarkdownSource path
+* Insights
+    - Prior creative was useful architecture guidance; treating it as frozen config would have shipped YAGNI

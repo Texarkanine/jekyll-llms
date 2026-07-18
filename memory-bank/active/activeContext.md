@@ -1,13 +1,13 @@
 # Active Context
 
 ## Current Task: category-collection-llms-indexes
-**Phase:** COMPLEXITY-ANALYSIS - COMPLETE
+**Phase:** PLAN - COMPLETE
 
 ## What Was Done
-- Initialized persistent memory bank (`productContext`, `systemPatterns`, `techContext`)
-- Clarified intent: Option A from creative, tightened for KISS
-- Determined Level 3 (intermediate feature: multiple components, architecture already chosen)
+- Level 3 plan written to `tasks.md`
+- Documented creative supersession: no `category_permalink`; default `/category/:name/`; archives soft-read only
+- Open questions all resolved; no creative re-entry
+- Implementation ordered: Config → Index → FullIndex → ScopeEnumerator → SiteWriter → README → verify
 
 ## Next Step
-- Load Level 3 workflow and execute plan phase
-- Plan docs must record that the creative was superseded by archives-aligned path resolution
+- Preflight phase to validate the plan
