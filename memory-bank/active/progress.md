@@ -90,3 +90,14 @@ Rework of `pr2-site-writer-hardening`: fail-fast `register_scope_builder` withou
     - Dropped String type-check on prefixes (Mutant noise); segment rules suffice
 * Insights
     - Duplicate detection needs empty-segment collapse or `//tags/fable` bypasses `/tags/fable/`
+
+## 2026-07-18 - QA - COMPLETE
+
+* Work completed
+    - Semantic review vs rework brief: items 1.2/2/3/4 implemented
+    - README path_prefix docs aligned with canonicalize/reject behavior
+    - `.qa-validation-status` = PASS
+* Decisions made
+    - No substantive code changes from QA
+* Insights
+    - None
