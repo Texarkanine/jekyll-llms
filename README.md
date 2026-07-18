@@ -94,7 +94,7 @@ Jekyll::Llms.register_scope_builder do |site, _config, entries|
 end
 ```
 
-Then, `/tags/foo/llms.txt` would show all the posts tagged with `foo`. `path_prefix` values are canonicalized (empty segments collapsed, trailing `/` ensured); empty/root prefixes and `.` / `..` segments raise `ArgumentError`, as do duplicate prefixes among non-empty scopes.
+Then, `/tags/foo/llms.txt` would show all the posts tagged with `foo`.
 
 ## License
 
