@@ -69,3 +69,12 @@ Add a minimal `register_scope_builder` extension so consumers can contribute ext
     - techContext unchanged
 * Insights
     - Built-ins could later become registry entries; reversible half is enough for now
+
+## 2026-07-18 - ARCHIVE - READY
+
+* Work completed
+    - Reflect complete; operator invoked `/niko-archive`
+* Decisions made
+    - Proceed to Level 2 archive for `scope-builder-extension`
+* Insights
+    - None
