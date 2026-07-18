@@ -15,3 +15,14 @@ Add a minimal `register_scope_builder` extension so consumers can contribute ext
     - Tag/author indexes remain consumer-side; gem ships registry only
 * Insights
     - Creative already closed design; L2 plan/build is execution, not exploration
+
+## 2026-07-18 - PLAN - COMPLETE
+
+* Work completed
+    - Linear TDD plan in `tasks.md` (registry → SiteWriter merge → README → verify)
+    - Mapped tests to existing `jekyll_llms_test.rb` / `site_writer_test.rb`
+* Decisions made
+    - Gem-side skip of empty contributed scopes
+    - Global `teardown` reset of builders in `test_helper`
+* Insights
+    - Intent is consumer `_plugins` registration, not new `llms:` tag/author flags

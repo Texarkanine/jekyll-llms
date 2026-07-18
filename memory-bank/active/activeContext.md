@@ -1,11 +1,12 @@
 # Active Context
 
 ## Current Task: scope-builder-extension
-**Phase:** COMPLEXITY-ANALYSIS - COMPLETE
+**Phase:** PLAN - COMPLETE
 
 ## What Was Done
-- Intent clarified and approved (Option B from creative-scope-builder-extension.md)
-- Classified as Level 2: small additive enhancement (registry + SiteWriter merge); design already decided; self-contained on the scoped-write path
+- Level 2 plan written: registry API on `Jekyll::Llms`, SiteWriter merge + empty skip, README custom-scopes section
+- TDD mapped to `jekyll_llms_test.rb` + `site_writer_test.rb`; teardown reset in `test_helper`
+- Creative Option B treated as locked design
 
 ## Next Step
-- Load Level 2 workflow and execute Plan phase
+- Preflight validation (automatic per L2 workflow)
