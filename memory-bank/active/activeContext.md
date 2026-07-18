@@ -1,11 +1,12 @@
 # Active Context
 
 ## Current Task: archives-category-slug-mode
-**Phase:** BUILD - COMPLETE
+**Phase:** QA - COMPLETE
 
 ## What Was Done
 - Soft-read `jekyll-archives.slug_mode` for built-in category `:name` slugification
-- Tests + README; `rake test` and `mutant run` both 100%
+- Tests + README; line and mutation coverage 100%
+- QA PASS — no semantic findings
 
 ## Next Step
-- Level 1 QA (`/niko-qa`)
+- L1 wrap-up commit; operator cleans `memory-bank/active/` when satisfied

@@ -32,3 +32,17 @@ Soft-read jekyll-archives `slug_mode` for built-in category scoped index paths s
     - Pass `mode:` through to `Utils.slugify` (nil behaves as default)
 * Insights
     - Completing the archives path soft-read; no gem-owned slug_mode knob
+
+## 2026-07-18 - QA - READY
+
+* Work completed
+    - Leaving BUILD; entering Level 1 QA
+
+## 2026-07-18 - QA - COMPLETE
+
+* Work completed
+    - Semantic review against project brief: KISS/DRY/YAGNI/completeness/regression/docs
+    - Wrote `.qa-validation-status` = PASS
+    - Reconciled persistent files — no updates (systemPatterns already covers archives soft-read for category paths)
+* Decisions made
+    - No code changes from QA

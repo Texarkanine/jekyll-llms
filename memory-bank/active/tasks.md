@@ -24,3 +24,7 @@ Built-in category paths soft-read archives permalink templates but always slugif
 | `test/jekyll/llms/config_test.rb` | slug_mode reader tests |
 | `test/jekyll/llms/scope_enumerator_test.rb` | ascii path assertion |
 | `README.md` | document slug_mode; remove v1 caveat |
+
+## QA
+
+- [x] Semantic review vs project brief — PASS (no findings)
