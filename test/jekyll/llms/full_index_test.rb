@@ -34,6 +34,7 @@ class JekyllLlmsFullIndexTest < Minitest::Test
       title: "Fixture Site",
       entries: [
         ["Missing", nil],
+        ["Empty", ""],
         ["Present", "Present body.\n"],
       ]
     ).content

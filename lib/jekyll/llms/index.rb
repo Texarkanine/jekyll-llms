@@ -4,7 +4,8 @@ module Jekyll
   module Llms
     class Index
       # Optional title:/description: override site config for scoped indexes.
-      def initialize(site:, entries:, url_for:, title: nil, description: nil)
+      # +site+ may be omitted when both title and description overrides are provided.
+      def initialize(entries:, url_for:, site: nil, title: nil, description: nil)
         @site = site
         @entries = entries
         @url_for = url_for
@@ -37,7 +38,7 @@ module Jekyll
       end
 
       def description
-        return @description_override.strip unless @description_override.nil?
+        return @description_override unless @description_override.nil?
 
         site.config.fetch("description", "").strip
       end

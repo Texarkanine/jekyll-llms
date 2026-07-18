@@ -56,7 +56,7 @@ module Jekyll
       end
 
       def category_path(name)
-        config.category_path_template(site).gsub(":name", Jekyll::Utils.slugify(name))
+        config.category_path_template(site).sub(":name", Utils.slugify(name))
       end
     end
   end

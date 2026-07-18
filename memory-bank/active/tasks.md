@@ -136,16 +136,16 @@ Each numbered unit below is one TDD cycle: **failing tests first**, then product
     - Tests first: `test/jekyll/llms/scope_enumerator_test.rb` (new) — category scopes from `site.categories` ∩ entries; slugified path; archives template; collection scopes for included writeable labels; flags off → `[]`; zero entries → omitted
     - Then code: `lib/jekyll/llms/scope.rb`, `lib/jekyll/llms/scope_enumerator.rb` (new)
 
-5. **SiteWriter orchestration**
+5. **SiteWriter orchestration** ✅
     - Tests first: `test/jekyll/llms/site_writer_test.rb` — root `llms-full.txt`; category/collection dest paths + content; archives path; flags false → no new artifacts; excluded post absent from scoped index
     - Then code: `lib/jekyll/llms/site_writer.rb`, requires in `lib/jekyll/llms.rb`
 
-6. **README**
+6. **README** ✅
     - Files: `README.md`
     - Changes: document flags + category path / archives soft-read (docs-only; no test cycle)
 
-7. **Verification**
-    - `bundle exec rake test` then `bundle exec mutant run`
+7. **Verification** ✅
+    - `bundle exec rake test` then `bundle exec mutant run` — both green (100% line + mutation)
 
 ## Technology Validation
 
@@ -182,5 +182,5 @@ No new technology - validation not required
 - [x] Technology validation complete
 - [x] Pre-Mortem complete
 - [x] Preflight
-- [ ] Build
+- [x] Build
 - [ ] QA

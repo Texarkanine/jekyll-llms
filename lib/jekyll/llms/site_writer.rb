@@ -14,6 +14,8 @@ module Jekyll
         markdown_entries = config.markdown? ? write_markdown : []
 
         write_index(markdown_entries) if config.llms_txt?
+        write_full if config.llms_full?
+        write_scopes(markdown_entries)
         write_html_links(markdown_entries)
       end
 
@@ -21,8 +23,38 @@ module Jekyll
 
       attr_reader :site, :config, :entries, :files
 
-      def write_index(markdown_entries)
-        files.write("llms.txt", Index.new(site: site, entries: entries, url_for: index_url(markdown_entries)).content)
+      def write_index(markdown_entries, scope: nil, path: "llms.txt")
+        index = if scope
+                  Index.new(
+                    entries: scope.entries,
+                    url_for: index_url(markdown_entries),
+                    title: scope.title,
+                    description: scope.description
+                  )
+                else
+                  Index.new(site: site, entries: entries, url_for: index_url(markdown_entries))
+                end
+        files.write(path, index.content)
+      end
+
+      def write_full(scope: nil, path: "llms-full.txt")
+        entry_list = scope ? scope.entries : entries
+        title = scope ? scope.title : site.config.fetch("title", "Jekyll Site")
+        pairs = full_entry_pairs(entry_list)
+        files.write(path, FullIndex.new(title: title, entries: pairs).content)
+      end
+
+      def write_scopes(markdown_entries)
+        ScopeEnumerator.new(site: site, config: config, entries: entries).scopes.each do |scope|
+          write_index(markdown_entries, scope: scope, path: "#{scope.path_prefix}llms.txt")
+          write_full(scope: scope, path: "#{scope.path_prefix}llms-full.txt") if config.llms_full?
+        end
+      end
+
+      def full_entry_pairs(entry_list)
+        entry_list.select(&:markdown_source?).map do |entry|
+          [entry.title, markdown_content(entry)]
+        end
       end
 
       def index_url(markdown_entries)

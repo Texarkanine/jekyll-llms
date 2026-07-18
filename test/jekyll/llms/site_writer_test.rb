@@ -219,6 +219,294 @@ class JekyllLlmsSiteWriterTest < Minitest::Test
     end
   end
 
+  def test_writes_root_llms_full_when_enabled
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "llms_full" => true,
+        "include" => ["pages"],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "page.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Page
+        ---
+
+        Page body.
+      MARKDOWN
+    }) do |_site, destination|
+      content = read_output(destination, "llms-full.txt")
+      assert_includes content, "# Fixture Site"
+      assert_includes content, "## Page"
+      assert_includes content, "Page body."
+    end
+  end
+
+  def test_llms_full_uses_default_title_when_site_title_missing
+    build_site({
+      "title" => :absent,
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => false,
+        "llms_full" => true,
+        "include" => ["pages"],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "page.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Page
+        ---
+
+        Page body.
+      MARKDOWN
+    }) do |_site, destination|
+      assert_includes read_output(destination, "llms-full.txt"), "# Jekyll Site"
+    end
+  end
+
+  def test_llms_full_omits_html_and_failed_markdown_without_stopping
+    build_site_without_plugin_output({
+      "_layouts/default.html" => default_layout,
+      "index.html" => <<~HTML,
+        ---
+        layout: default
+        title: Home
+        ---
+
+        <h1>Home</h1>
+      HTML
+      "valid.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Valid
+        render_with_liquid: false
+        ---
+
+        Valid body.
+      MARKDOWN
+      "invalid.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Invalid
+        render_with_liquid: false
+        ---
+
+        Invalid body.
+      MARKDOWN
+    }) do |site, destination|
+      File.delete(File.join(File.dirname(destination), "invalid.md"))
+      site.config["llms"] = {
+        "markdown" => false,
+        "llms_txt" => false,
+        "llms_full" => true,
+        "include" => ["pages"],
+        "exclude" => [],
+      }
+
+      Jekyll::Llms::SiteWriter.new(site).write
+
+      content = read_output(destination, "llms-full.txt")
+      assert_includes content, "## Valid"
+      assert_includes content, "Valid body."
+      refute_includes content, "Home"
+      refute_includes content, "Invalid"
+    end
+  end
+
+  def test_writes_category_indexes_when_enabled
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "llms_full" => true,
+        "categories" => true,
+        "include" => %w[pages posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        categories: [fable]
+        ---
+
+        Fable body.
+      MARKDOWN
+      "_posts/2024-01-02-other-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Other Post
+        categories: [other]
+        ---
+
+        Other body.
+      MARKDOWN
+    }) do |_site, destination|
+      index = read_output(destination, "category/fable/llms.txt")
+      assert_includes index, "# fable"
+      assert_includes index, "> Category: fable"
+      assert_includes index, "Fable Post"
+      refute_includes index, "Other Post"
+
+      full = read_output(destination, "category/fable/llms-full.txt")
+      assert_includes full, "# fable"
+      assert_includes full, "## Fable Post"
+      assert_includes full, "Fable body."
+      refute_includes full, "Other Post"
+    end
+  end
+
+  def test_writes_collection_indexes_when_enabled
+    build_site({
+      "collections" => { "garden" => { "output" => true } },
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "llms_full" => true,
+        "collection_indexes" => true,
+        "include" => %w[pages posts garden],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_garden/note.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Garden Note
+        ---
+
+        Garden body.
+      MARKDOWN
+      "page.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Page
+        ---
+
+        Page body.
+      MARKDOWN
+    }) do |_site, destination|
+      index = read_output(destination, "garden/llms.txt")
+      assert_includes index, "# garden"
+      assert_includes index, "> Collection: garden"
+      assert_includes index, "Garden Note"
+      refute_includes index, "[Page]"
+
+      full = read_output(destination, "garden/llms-full.txt")
+      assert_includes full, "## Garden Note"
+      assert_includes full, "Garden body."
+    end
+  end
+
+  def test_uses_archives_category_path_for_scoped_indexes
+    build_site({
+      "jekyll-archives" => { "permalinks" => { "category" => "/topics/:name/" } },
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "categories" => true,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-topic-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Topic Post
+        categories: [fable]
+        ---
+
+        Topic body.
+      MARKDOWN
+    }) do |_site, destination|
+      assert_path_exists output_path(destination, "topics/fable/llms.txt")
+      refute_path_exists output_path(destination, "topics/fable/llms-full.txt")
+      refute_path_exists output_path(destination, "category/fable/llms.txt")
+    end
+  end
+
+  def test_does_not_write_new_artifacts_when_flags_false
+    build_site({
+      "collections" => { "garden" => { "output" => true } },
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "include" => %w[pages posts garden],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        categories: [fable]
+        ---
+
+        Fable body.
+      MARKDOWN
+      "_garden/note.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Garden Note
+        ---
+
+        Garden body.
+      MARKDOWN
+    }) do |_site, destination|
+      refute_path_exists output_path(destination, "llms-full.txt")
+      refute_path_exists output_path(destination, "category/fable/llms.txt")
+      refute_path_exists output_path(destination, "garden/llms.txt")
+    end
+  end
+
+  def test_omits_excluded_posts_from_scoped_indexes
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "categories" => true,
+        "include" => %w[posts],
+        "exclude" => ["/blog/secret"],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-public.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Public Post
+        categories: [fable]
+        ---
+
+        Public body.
+      MARKDOWN
+      "_posts/2024-01-02-secret.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Secret Post
+        categories: [fable]
+        permalink: /blog/secret
+        ---
+
+        Secret body.
+      MARKDOWN
+    }) do |_site, destination|
+      index = read_output(destination, "category/fable/llms.txt")
+      assert_includes index, "Public Post"
+      refute_includes index, "Secret Post"
+    end
+  end
+
   private
 
   def default_layout

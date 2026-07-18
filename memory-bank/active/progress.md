@@ -39,3 +39,15 @@ Implement optional root `llms-full.txt` plus per-category and per-collection sco
     - Advisory only: custom archives `slug_mode` out of scope for v1; note in README during build
 * Insights
     - L3 gate to build is operator `/niko-build` after preflight PASS
+
+## 2026-07-17 - BUILD - COMPLETE
+
+* Work completed
+    - TDD units 1–7: Config, Index overrides, FullIndex, Scope/ScopeEnumerator, SiteWriter, README, verification
+    - 67 tests, 100% line coverage, 100% mutation coverage
+* Decisions made
+    - Category path via archives soft-read else `/category/:name/`; slugify with `Utils.slugify`
+    - Skip zero-entry scopes; omit HTML-only / failed markdown from full corpora
+    - Enumerator owns flag gating (no SiteWriter `scoped_indexes?` wrapper)
+* Insights
+    - Several early mutants were redundant guards that ScopeEnumerator / FullIndex already enforced

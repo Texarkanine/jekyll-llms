@@ -127,6 +127,25 @@ class JekyllLlmsIndexTest < Minitest::Test
     TEXT
   end
 
+  def test_allows_omitting_site_when_title_and_description_overrides_are_provided
+    content = Jekyll::Llms::Index.new(
+      entries: [entry(section: "pages", title: "Home", description: "", url: "/")],
+      url_for: original_urls,
+      title: "Category: fable",
+      description: "Category: fable"
+    ).content
+
+    assert_equal <<~TEXT, content
+      # Category: fable
+
+      > Category: fable
+
+      ## Pages
+
+      - [Home](https://example.com/base/)
+    TEXT
+  end
+
   private
 
   def index(site:, entries:, url_for:, title: nil, description: nil)
