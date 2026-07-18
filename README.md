@@ -51,12 +51,14 @@ llms:
 ```
 
 - `markdown`: generate sidecars for Markdown sources, link `llms.txt` to those sidecars, and add HTML alternate links. Default: `true`.
-- `llms_txt`: generate `/llms.txt`. Default: `true`.
-- `llms_full`: generate `/llms-full.txt` and scoped `llms-full.txt` for enabled category/collection indexes and for any scopes contributed via `register_scope_builder`. Default: `false`.
-- `categories`: generate per-category `llms.txt` (and `llms-full.txt` when `llms_full` is true) for each non-empty category after include/exclude filtering. Default: `false`.
-- `collection_indexes`: generate per-collection indexes under `/{label}/` for each included writeable collection (not `pages`/`posts`). Default: `false`.
+- `llms_txt`: generate `llms.txt` at the site root and for each active scope. Default: `true`.
+- `llms_full`: generate `llms-full.txt` at the site root and for each active scope. Default: `false`.
+- `categories`: include a scope for each non-empty category after include/exclude filtering (artifact types still controlled by `llms_txt` / `llms_full`). Default: `false`.
+- `collection_indexes`: include a scope under `/{label}/` for each included writeable collection (not `pages`/`posts`). Default: `false`.
 - `include`: `pages`, `posts`, and output collection names. Default: `[pages, posts]`.
 - `exclude`: URL, Markdown path, or source path globs. Default: `[/README.md, /CHANGELOG.md]`.
+
+`categories`, `collection_indexes`, and `register_scope_builder` decide which scopes exist. `llms_txt`, `llms_full`, and `markdown` decide what is generated for the root and for those scopes. For example, `llms_txt: false` with `llms_full: true` and `categories: true` writes only full indexes (root and per-category).
 
 Per-entry opt-out:
 
@@ -92,7 +94,7 @@ Jekyll::Llms.register_scope_builder do |site, _config, entries|
 end
 ```
 
-Then, `/tags/foo/llms.txt` would show all the posts tagged with `foo`.
+Then, `/tags/foo/llms.txt` would show all the posts tagged with `foo`. `path_prefix` values are normalized to end with `/`; duplicate prefixes among non-empty scopes raise `ArgumentError`.
 
 ## License
 

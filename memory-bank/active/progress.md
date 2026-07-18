@@ -13,3 +13,16 @@ Harden `SiteWriter` scoped writes per PR #2: honor `llms_txt` for scoped indexes
     - Builder fail-fast and FullIndex spacing nit remain dismissed
 * Insights
     - Categories/collection flags select scopes; artifact toggles control generation for each scope
+
+## 2026-07-18 - BUILD - COMPLETE
+
+* Work completed
+    - Scoped `llms.txt` / `llms-full.txt` gated on `llms_txt?` / `llms_full?`
+    - `path_prefix` normalized to trailing `/`; duplicates raise `ArgumentError`
+    - README updated for flag semantics
+    - Line coverage 100%; mutation coverage 100%
+* Decisions made
+    - Dropped early-return on write_scopes (redundant with per-write gates)
+    - Used `group_by` for uniqueness instead of a sentinel hash value (Mutant)
+* Insights
+    - Duplicate detection must normalize prefixes so `/foo` and `/foo/` collide

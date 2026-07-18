@@ -45,11 +45,13 @@ module Jekyll
       end
 
       def write_scopes(markdown_entries)
-        (built_in_scopes + extra_scopes).each do |scope|
-          next if scope.entries.empty?
+        scopes = (built_in_scopes + extra_scopes).reject { |scope| scope.entries.empty? }
+        ensure_unique_path_prefixes!(scopes)
 
-          write_index(markdown_entries, scope: scope, path: "#{scope.path_prefix}llms.txt")
-          write_full(scope: scope, path: "#{scope.path_prefix}llms-full.txt") if config.llms_full?
+        scopes.each do |scope|
+          prefix = normalized_path_prefix(scope.path_prefix)
+          write_index(markdown_entries, scope: scope, path: "#{prefix}llms.txt") if config.llms_txt?
+          write_full(scope: scope, path: "#{prefix}llms-full.txt") if config.llms_full?
         end
       end
 
@@ -59,6 +61,16 @@ module Jekyll
 
       def extra_scopes
         Llms.scope_builders.flat_map { |builder| Array(builder.call(site, config, entries)) }
+      end
+
+      def ensure_unique_path_prefixes!(scopes)
+        scopes.group_by { |scope| normalized_path_prefix(scope.path_prefix) }.each do |prefix, group|
+          raise ArgumentError, "Duplicate LLMs scope path_prefix: #{prefix}" if group.size > 1
+        end
+      end
+
+      def normalized_path_prefix(prefix)
+        prefix.end_with?("/") ? prefix : "#{prefix}/"
       end
 
       def full_entry_pairs(entry_list)

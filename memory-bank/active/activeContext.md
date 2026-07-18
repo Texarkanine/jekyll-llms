@@ -1,11 +1,13 @@
 # Active Context
 
 ## Current Task: pr2-site-writer-hardening
-**Phase:** COMPLEXITY-ANALYSIS - COMPLETE
+**Phase:** BUILD - COMPLETE
 
 ## What Was Done
-- Judged PR #2 feedback; operator corrected Item 4: `llms_txt`/`llms_full`/`markdown` gate artifacts for every scope; categories/collections only bring scopes into play
-- Complexity: Level 1 (bug fixes concentrated in `SiteWriter` + README/tests)
+- TDD: three SiteWriter tests (scoped `llms_txt` gating, path normalize, duplicate prefix)
+- Implemented gates + `normalized_path_prefix` + `ensure_unique_path_prefixes!` via `group_by`
+- README: scopes vs artifact toggles; path_prefix normalize / duplicate error note
+- `bundle exec rake test` and `bundle exec mutant run --fail-fast` both green at 100%
 
 ## Next Step
-- Load Level 1 workflow and enter Build
+- QA phase

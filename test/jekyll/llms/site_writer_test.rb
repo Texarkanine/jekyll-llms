@@ -470,6 +470,105 @@ class JekyllLlmsSiteWriterTest < Minitest::Test
     end
   end
 
+  # llms_txt: false must suppress scoped llms.txt while llms_full may still write scoped full indexes.
+  def test_llms_txt_false_skips_scoped_indexes_but_allows_scoped_full
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => false,
+        "llms_full" => true,
+        "categories" => true,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        categories: [fable]
+        ---
+
+        Fable body.
+      MARKDOWN
+    }) do |_site, destination|
+      refute_path_exists output_path(destination, "llms.txt")
+      refute_path_exists output_path(destination, "category/fable/llms.txt")
+      assert_path_exists output_path(destination, "llms-full.txt")
+      full = read_output(destination, "category/fable/llms-full.txt")
+      assert_includes full, "## Fable Post"
+      assert_includes full, "Fable body."
+    end
+  end
+
+  # Custom path_prefix without a trailing slash must still write under prefix/llms.txt.
+  def test_normalizes_scope_path_prefix_without_trailing_slash
+    register_title_scope_builder(path_prefix: "/tags/fable", title: "fable", match_title: "Fable Post")
+
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        ---
+
+        Fable body.
+      MARKDOWN
+    }) do |_site, destination|
+      refute_path_exists output_path(destination, "tags/fablellms.txt")
+      index = read_output(destination, "tags/fable/llms.txt")
+      assert_includes index, "Fable Post"
+    end
+  end
+
+  # Two non-empty scopes with the same effective path_prefix must fail clearly before writing.
+  def test_rejects_duplicate_scope_path_prefixes
+    Jekyll::Llms.register_scope_builder do |_site, _config, entries|
+      scoped = entries.select { |entry| entry.title == "Fable Post" }
+      Jekyll::Llms::Scope.new(
+        path_prefix: "/category/fable",
+        title: "collision",
+        description: "Collision",
+        entries: scoped
+      )
+    end
+
+    error = assert_raises(ArgumentError) do
+      build_site({
+        "llms" => {
+          "markdown" => true,
+          "llms_txt" => true,
+          "categories" => true,
+          "include" => %w[posts],
+          "exclude" => [],
+        },
+      }, {
+        "_layouts/default.html" => default_layout,
+        "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+          ---
+          layout: default
+          title: Fable Post
+          categories: [fable]
+          ---
+
+          Fable body.
+        MARKDOWN
+      }) do |_site, _destination|
+      end
+    end
+
+    assert_includes error.message, "/category/fable/"
+  end
+
   def test_omits_excluded_posts_from_scoped_indexes
     build_site({
       "llms" => {
