@@ -72,7 +72,7 @@ flowchart TD
 
 ### Invariants & Constraints
 
-- Must preserve root `llms.txt` / sidecar / HTML linker behavior when new flags are false.
+- Must preserve root `llms.txt` / sidecar / HTML linker behavior when new flags are false. New flags default false; new behavior is opt-in.
 - Must filter once via `EntrySet`; scopes only subset that list.
 - Must not require jekyll-archives to be installed.
 - Must keep 100% line + mutation coverage.
@@ -118,21 +118,21 @@ None unresolved — no creative phase re-entry required.
 
 Each numbered unit below is one TDD cycle: **failing tests first**, then production code, then refactor. Do not implement a unit’s production files before its tests exist and fail for the right reason.
 
-1. **Config flags + category template**
+1. **Config flags + category template** ✅
     - Tests first: `test/jekyll/llms/config_test.rb` — defaults false for new flags; merged true; `category_path_template` → `/category/:name/` without archives; uses archives permalink when set
     - Then code: `lib/jekyll/llms/config.rb` — DEFAULTS + predicates + template reader
     - Creative ref: superseded path decision (see Creative Supersession)
 
-2. **Index title/description overrides**
+2. **Index title/description overrides** ✅
     - Tests first: `test/jekyll/llms/index_test.rb` — override title/description appear; omit empty description; no-override keeps site title/description
     - Then code: `lib/jekyll/llms/index.rb` — optional kwargs with site-config fallback
 
-3. **FullIndex**
+3. **FullIndex** ✅
     - Tests first: `test/jekyll/llms/full_index_test.rb` (new) — H1 title; H2 + body per markdown entry; skips entries without bodies; blank line between entries
     - Then code: `lib/jekyll/llms/full_index.rb` (new) — pure renderer over title + `[[entry, body], ...]` (or equivalent)
     - Wire require in `lib/jekyll/llms.rb` only when SiteWriter needs it (step 5 is fine)
 
-4. **Scope + ScopeEnumerator**
+4. **Scope + ScopeEnumerator** ✅
     - Tests first: `test/jekyll/llms/scope_enumerator_test.rb` (new) — category scopes from `site.categories` ∩ entries; slugified path; archives template; collection scopes for included writeable labels; flags off → `[]`; zero entries → omitted
     - Then code: `lib/jekyll/llms/scope.rb`, `lib/jekyll/llms/scope_enumerator.rb` (new)
 

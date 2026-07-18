@@ -1,12 +1,11 @@
 # Active Context
 
 ## Current Task: category-collection-llms-indexes
-**Phase:** PREFLIGHT - COMPLETE
+**Phase:** BUILD - IN-PROGRESS
 
 ## What Was Done
-- Preflight PASS
-- Strengthened implementation steps to explicit tests-first per unit
-- Confirmed creative supersession remains the path/config contract
+- Units 1–4 complete (Config flags/template, Index overrides, FullIndex, Scope + ScopeEnumerator)
+- Creative Option A retained; path/config supersession applied
 
 ## Next Step
-- Operator runs `/niko-build` to implement
+- TDD unit 5: SiteWriter orchestration (root full + scoped indexes)

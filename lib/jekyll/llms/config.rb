@@ -6,9 +6,14 @@ module Jekyll
       DEFAULTS = {
         "markdown" => true,
         "llms_txt" => true,
+        "llms_full" => false,
+        "categories" => false,
+        "collection_indexes" => false,
         "include" => %w[pages posts],
         "exclude" => ["/README.md", "/CHANGELOG.md"],
       }.freeze
+
+      DEFAULT_CATEGORY_PATH_TEMPLATE = "/category/:name/"
 
       def self.from_site(site)
         new(DEFAULTS.merge(site.config["llms"] || {}))
@@ -32,6 +37,22 @@ module Jekyll
 
       def excludes
         @values.fetch("exclude")
+      end
+
+      def llms_full?
+        @values.fetch("llms_full")
+      end
+
+      def categories?
+        @values.fetch("categories")
+      end
+
+      def collection_indexes?
+        @values.fetch("collection_indexes")
+      end
+
+      def category_path_template(site)
+        site.config.dig("jekyll-archives", "permalinks", "category") || DEFAULT_CATEGORY_PATH_TEMPLATE
       end
     end
   end
