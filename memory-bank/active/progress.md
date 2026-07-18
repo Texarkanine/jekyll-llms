@@ -1,6 +1,6 @@
 # Progress
 
-Rework of `pr2-site-writer-hardening`: dedupe collection include labels in `ScopeEnumerator`, canonicalize/validate scope `path_prefix` in `SiteWriter`, and call `super` in test teardown; push to `cats-and-colls` then cherry-pick onto `cats-and-colls-polish`.
+Rework of `pr2-site-writer-hardening`: fail-fast `register_scope_builder` without a block; dedupe collection include labels in `ScopeEnumerator`; canonicalize/validate scope `path_prefix` in `SiteWriter`; call `super` in test teardown; push to `cats-and-colls` then cherry-pick onto `cats-and-colls-polish`.
 
 **Complexity:** Level 2
 
@@ -42,8 +42,8 @@ Rework of `pr2-site-writer-hardening`: dedupe collection include labels in `Scop
 * Work completed
     - Operator requested rework of `pr2-site-writer-hardening` from CodeRabbit review `pullrequestreview-4729109004`
 * Decisions made
-    - Fix items 2, 3, and 4 only (dedupe collection labels; canonicalize/validate scope paths; call `super` in teardown)
-    - Item 1 nitpicks remain as previously judged: fix `block_given?` was optional in that item; operator excluded item 1 — do not implement memoize / FullIndex spacing / require-block unless revisited
+    - Fix items 1.2, 2, 3, and 4 (fail-fast without block; dedupe collection labels; canonicalize/validate scope paths; call `super` in teardown)
+    - Item 1 nitpicks other than fail-fast remain dismissed (memoize markdown, FullIndex spacing)
     - Deliver on `cats-and-colls`, then cherry-pick onto `cats-and-colls-polish`
 * Insights
     - Prior QA PASS stands; this rework addresses new review findings on the same hardening surface
@@ -56,3 +56,13 @@ Rework of `pr2-site-writer-hardening`: dedupe collection include labels in `Scop
     - Task id: `pr2-site-writer-hardening-rework`
 * Insights
     - Same delivery path as prior task: push `cats-and-colls`, cherry-pick product fix to polish
+
+## 2026-07-18 - PLAN - COMPLETE
+
+* Work completed
+    - TDD plan for items 1.2, 2, 3, 4 across `llms.rb`, `scope_enumerator.rb`, `site_writer.rb`, `test_helper.rb`
+* Decisions made
+    - Operator added item 1.2 mid-plan (fail-fast without block)
+    - Reject `.`/`..`/empty-root path prefixes rather than collapsing `.`
+* Insights
+    - Isolate product commit for clean cherry-pick onto `cats-and-colls-polish`

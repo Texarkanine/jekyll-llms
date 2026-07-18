@@ -1,10 +1,12 @@
 # Active Context
 
 ## Current Task: pr2-site-writer-hardening-rework
-**Phase:** COMPLEXITY-ANALYSIS - COMPLETE
+**Phase:** PLAN - COMPLETE
 
 ## What Was Done
-- Classified rework as Level 2: three related correctness fixes spanning `ScopeEnumerator`, `SiteWriter`, and test helper teardown
+- Expanded rework scope to include item 1.2 (`register_scope_builder` fail-fast without block)
+- Wrote Level 2 test + implementation plan for items 1.2, 2, 3, 4
+- Decision: reject `.` / `..` / empty-root prefixes rather than silently collapsing `.`
 
 ## Next Step
-- Load Level 2 workflow and enter PLAN phase
+- Preflight validation, then build
