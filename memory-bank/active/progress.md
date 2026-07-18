@@ -46,3 +46,5 @@ Soft-read jekyll-archives `slug_mode` for built-in category scoped index paths s
     - Reconciled persistent files — no updates (systemPatterns already covers archives soft-read for category paths)
 * Decisions made
     - No code changes from QA
+* Follow-up
+    - Wrap-up commit had overwritten Category Paths docs; restored default-path + slug_mode wording (kept "plays nice" phrasing)
