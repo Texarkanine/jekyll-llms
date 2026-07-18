@@ -101,3 +101,13 @@ Rework of `pr2-site-writer-hardening`: fail-fast `register_scope_builder` withou
     - No substantive code changes from QA
 * Insights
     - None
+
+## 2026-07-18 - REFLECT - COMPLETE
+
+* Work completed
+    - Wrote reflection-pr2-site-writer-hardening-rework.md
+    - Persistent files unchanged (no system-level pattern invalidation)
+* Decisions made
+    - Path validation stays on SiteWriter write gate
+* Insights
+    - Empty-segment collapse is required for honest duplicate detection
