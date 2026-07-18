@@ -6,7 +6,7 @@
 ## What Was Done
 - Soft-read `jekyll-archives.slug_mode` for built-in category `:name` slugification
 - Tests + README; line and mutation coverage 100%
-- QA PASS — no semantic findings
+- QA PASS; restored Category Paths README after wrap-up overwrite
 
 ## Next Step
-- L1 wrap-up commit; operator cleans `memory-bank/active/` when satisfied
+- Operator cleans `memory-bank/active/` when satisfied
