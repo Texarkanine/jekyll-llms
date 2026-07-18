@@ -54,6 +54,12 @@ module Jekyll
       def category_path_template(site)
         site.config.dig("jekyll-archives", "permalinks", "category") || DEFAULT_CATEGORY_PATH_TEMPLATE
       end
+
+      # Soft-reads jekyll-archives.slug_mode for category :name slugification.
+      # Returns nil when archives / slug_mode is absent (Jekyll default slugify mode).
+      def category_slug_mode(site)
+        site.config.dig("jekyll-archives", "slug_mode")
+      end
     end
   end
 end

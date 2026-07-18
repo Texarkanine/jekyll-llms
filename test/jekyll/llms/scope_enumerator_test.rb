@@ -45,6 +45,24 @@ class JekyllLlmsScopeEnumeratorTest < Minitest::Test
     assert_equal "/topics/fable/", scopes.first.path_prefix
   end
 
+  # Soft-reads jekyll-archives.slug_mode when slugifying category :name for the path.
+  def test_uses_archives_slug_mode_for_category_path
+    post = item(url: "/blog/post")
+    entry = entry_for(post, section: "posts")
+    site = site(
+      categories: { "Café" => [post] },
+      config: {
+        "url" => "https://example.com",
+        "baseurl" => "",
+        "jekyll-archives" => { "slug_mode" => "ascii" },
+      }
+    )
+
+    scopes = scopes_for(site: site, config: config(categories: true), entries: [entry])
+
+    assert_equal "/category/caf/", scopes.first.path_prefix
+  end
+
   # One scope per included writeable collection label (not pages/posts); path /{label}/.
   def test_builds_collection_scopes_for_included_writeable_collections
     garden_doc = item(url: "/garden/note")

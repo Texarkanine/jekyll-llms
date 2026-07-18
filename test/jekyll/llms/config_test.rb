@@ -80,6 +80,20 @@ class JekyllLlmsConfigTest < Minitest::Test
     assert_equal "/topics/:name/", config.category_path_template(archives_site)
   end
 
+  # Soft-reads jekyll-archives.slug_mode when present; nil when archives / slug_mode absent.
+  def test_category_slug_mode_defaults_without_archives
+    config = Jekyll::Llms::Config.from_site(site({}))
+
+    assert_nil config.category_slug_mode(site({}))
+  end
+
+  def test_category_slug_mode_uses_archives_value_when_present
+    config = Jekyll::Llms::Config.from_site(site({}))
+    archives_site = site("jekyll-archives" => { "slug_mode" => "ascii" })
+
+    assert_equal "ascii", config.category_slug_mode(archives_site)
+  end
+
   private
 
   def site(config)

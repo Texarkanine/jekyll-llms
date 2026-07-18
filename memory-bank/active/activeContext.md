@@ -1,11 +1,11 @@
 # Active Context
 
 ## Current Task: archives-category-slug-mode
-**Phase:** BUILD - READY
+**Phase:** BUILD - COMPLETE
 
 ## What Was Done
-- Intent clarified and approved: mirror jekyll-archives `slug_mode` for built-in category path `:name` slugification; docs update; consumer builders out of scope
-- Classified as Level 1 (single-component path-parity fix; clear approach; no design exploration)
+- Soft-read `jekyll-archives.slug_mode` for built-in category `:name` slugification
+- Tests + README; `rake test` and `mutant run` both 100%
 
 ## Next Step
-- Execute Level 1 Build
+- Level 1 QA (`/niko-qa`)

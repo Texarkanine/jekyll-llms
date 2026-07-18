@@ -66,7 +66,7 @@ llms: false
 
 ### Category Paths
 
-Category files land under the category archive path. When [jekyll-archives](https://github.com/jekyll/jekyll-archives) configures `permalinks.category`, that template is used. Otherwise the default is `/category/:name/`, matching jekyll-archives' stock category permalink. The gem does not require jekyll-archives. Custom archives `slug_mode` values are not mirrored in v1.
+Category files land under the category archive path. When [jekyll-archives](https://github.com/jekyll/jekyll-archives) configures `permalinks.category`, that template is used. Otherwise the default is `/category/:name/`, matching jekyll-archives' stock category permalink. When archives configures `slug_mode`, that mode is used when slugifying `:name`. The gem does not require jekyll-archives.
 
 ### Custom Scopes
 

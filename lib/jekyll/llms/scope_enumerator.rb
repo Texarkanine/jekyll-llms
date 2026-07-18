@@ -56,7 +56,8 @@ module Jekyll
       end
 
       def category_path(name)
-        config.category_path_template(site).sub(":name", Utils.slugify(name))
+        slug = Utils.slugify(name, mode: config.category_slug_mode(site))
+        config.category_path_template(site).sub(":name", slug)
       end
     end
   end
