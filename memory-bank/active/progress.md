@@ -26,3 +26,14 @@ Add a minimal `register_scope_builder` extension so consumers can contribute ext
     - Global `teardown` reset of builders in `test_helper`
 * Insights
     - Intent is consumer `_plugins` registration, not new `llms:` tag/author flags
+
+## 2026-07-18 - PREFLIGHT - COMPLETE
+
+* Work completed
+    - Validated plan vs `SiteWriter` / `ScopeEnumerator` / test helpers
+    - Minor plan amendments (registration timing, README `llms_full` wording)
+    - `.preflight-status` = PASS
+* Decisions made
+    - No re-level; Option B remains locked
+* Insights
+    - Prefer register-before-`build_site` so the real hook path is exercised

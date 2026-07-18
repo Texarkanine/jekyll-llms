@@ -39,7 +39,8 @@ Minimal consumer extension: `Jekyll::Llms.register_scope_builder` registry; `Sit
 
 3. **SiteWriter contributed-scope tests (failing)**
    - Files: `test/jekyll/llms/site_writer_test.rb`
-   - Changes: register a builder in `build_site_without_plugin_output` (or equivalent) that subsets entries and asserts path writes; cover empty skip, ungated flags, coexistence with categories, `llms_full`, single-Scope return
+   - Changes: register builders that subset entries and assert path writes; cover empty skip, ungated flags, coexistence with categories, `llms_full`, single-Scope return
+   - Registration timing: register *before* `build_site` when the post_write hook should fire once; use `build_site_without_plugin_output` + explicit `SiteWriter#write` only when the test must mutate `site.config["llms"]` after process (same pattern as existing full-index tests)
 
 4. **SiteWriter merge implementation**
    - Files: `lib/jekyll/llms/site_writer.rb`
@@ -47,7 +48,7 @@ Minimal consumer extension: `Jekyll::Llms.register_scope_builder` registry; `Sit
 
 5. **README consumer docs**
    - Files: `README.md`
-   - Changes: short “Custom scopes” section documenting `register_scope_builder` + tag-shaped sketch (authors note optional); clarify not gated on `categories` / `collection_indexes`; note empty scopes skipped
+   - Changes: short “Custom scopes” section documenting `register_scope_builder` + tag-shaped sketch (authors note optional); clarify not gated on `categories` / `collection_indexes`; note empty scopes skipped; amend the `llms_full` bullet so it mentions contributed scopes too (today it only names category/collection)
 
 6. **Verification**
    - Commands: `bundle exec rake test`, `bundle exec mutant run`
@@ -81,6 +82,11 @@ No new technology - validation not required
 - [x] Implementation plan complete
 - [x] Technology validation complete
 - [x] Pre-Mortem complete
-- [ ] Preflight
+- [x] Preflight
 - [ ] Build
 - [ ] QA
+
+## Preflight Amendments
+
+- Clarified builder registration timing vs `build_site` / `build_site_without_plugin_output`
+- README step must update the existing `llms_full` config bullet for contributed scopes
