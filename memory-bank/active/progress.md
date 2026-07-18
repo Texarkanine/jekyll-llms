@@ -59,3 +59,13 @@ Add a minimal `register_scope_builder` extension so consumers can contribute ext
     - No substantive rework; implementation matches Option B
 * Insights
     - Empty-skip `next` vs `break` is the load-bearing behavioral edge for multi-scope builders
+
+## 2026-07-18 - REFLECT - COMPLETE
+
+* Work completed
+    - Wrote `memory-bank/active/reflection/reflection-scope-builder-extension.md`
+    - Reconciled productContext (custom scopes use case) and systemPatterns (already updated in QA)
+* Decisions made
+    - techContext unchanged
+* Insights
+    - Built-ins could later become registry entries; reversible half is enough for now

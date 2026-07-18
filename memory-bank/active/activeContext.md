@@ -1,11 +1,11 @@
 # Active Context
 
 ## Current Task: scope-builder-extension
-**Phase:** QA - COMPLETE
+**Phase:** REFLECT - COMPLETE
 
 ## What Was Done
-- Semantic QA PASS; systemPatterns note for `scope_builders`
-- Build remains green (79 tests, 100% line + mutation)
+- Reflection written; productContext + systemPatterns reconciled for scope builders
+- QA and build both PASS; coverage 100% line + mutation
 
 ## Next Step
-- Reflect phase (automatic per L2 workflow)
+- Operator runs `/niko-archive` to archive and finalize
