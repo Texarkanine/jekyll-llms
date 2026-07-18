@@ -36,3 +36,14 @@ Harden `SiteWriter` scoped writes per PR #2: honor `llms_txt` for scoped indexes
     - No substantive QA failures; persistent files unchanged (flag semantics belong in README, not systemPatterns)
 * Insights
     - None
+
+## 2026-07-18 - REWORK INITIATED
+
+* Work completed
+    - Operator requested rework of `pr2-site-writer-hardening` from CodeRabbit review `pullrequestreview-4729109004`
+* Decisions made
+    - Fix items 2, 3, and 4 only (dedupe collection labels; canonicalize/validate scope paths; call `super` in teardown)
+    - Item 1 nitpicks remain as previously judged: fix `block_given?` was optional in that item; operator excluded item 1 — do not implement memoize / FullIndex spacing / require-block unless revisited
+    - Deliver on `cats-and-colls`, then cherry-pick onto `cats-and-colls-polish`
+* Insights
+    - Prior QA PASS stands; this rework addresses new review findings on the same hardening surface

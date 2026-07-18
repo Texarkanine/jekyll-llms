@@ -41,3 +41,15 @@ Two scopes share the same effective output prefix; the build fails with a clear 
 4. Duplicate `path_prefix` among non-empty scopes raises a clear error.
 5. README documents the corrected flag semantics.
 6. Changes are on `cats-and-colls` and pushed; code-only cherry/merge into `cats-and-colls-polish`.
+
+## Rework
+
+Address CodeRabbit review items 2–4 from [PR #2 review 4729109004](https://github.com/Texarkanine/jekyll-llms/pull/2#pullrequestreview-4729109004):
+
+1. **Item 2** — Deduplicate collection labels in `ScopeEnumerator#collection_scopes` (e.g. `include: [garden, garden]`) so enabling `collection_indexes` does not trip duplicate-prefix rejection. Add regression coverage.
+2. **Item 3** — Canonicalize and validate `path_prefix` in `SiteWriter` before duplicate grouping or writing: reject empty/root and `.`/`..` segments; treat equivalent forms (trailing slash, `./`) as the same prefix.
+3. **Item 4** — Call `super` in `Minitest::Test#teardown` after `reset_scope_builders!`.
+
+Out of scope for this rework: review-body nitpicks from item 1 (memoize markdown, `register_scope_builder` block_given?, FullIndex spacing).
+
+Delivery: push to `cats-and-colls`, then cherry-pick the product fix onto `cats-and-colls-polish`.
