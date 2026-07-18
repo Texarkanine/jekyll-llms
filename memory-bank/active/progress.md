@@ -51,3 +51,14 @@ Implement optional root `llms-full.txt` plus per-category and per-collection sco
     - Enumerator owns flag gating (no SiteWriter `scoped_indexes?` wrapper)
 * Insights
     - Several early mutants were redundant guards that ScopeEnumerator / FullIndex already enforced
+
+## 2026-07-17 - QA - COMPLETE
+
+* Work completed
+    - Semantic review vs plan/brief; creative path supersession honored in code
+    - Trivial README intro alignment
+    - `.qa-validation-status` = PASS
+* Decisions made
+    - No substantive rework required
+* Insights
+    - Double MarkdownSource read when both markdown + llms_full is acceptable KISS for v1

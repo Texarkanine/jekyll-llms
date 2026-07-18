@@ -2,7 +2,7 @@
 
 Jekyll plugin that produces LLM-friendly formats alongside a regular website.
 
-Namely: `llms.txt`, Markdown sidecars, and HTML alternate links to sidecars.
+Namely: `llms.txt`, optional `llms-full.txt` and scoped indexes, Markdown sidecars, and HTML alternate links to sidecars.
 
 ## Installation
 
