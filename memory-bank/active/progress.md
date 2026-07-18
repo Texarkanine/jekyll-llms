@@ -48,3 +48,14 @@ Add a minimal `register_scope_builder` extension so consumers can contribute ext
     - Gem-side empty skip uses `next` (must continue after empty scopes)
 * Insights
     - `Array(builder.call)` needs array-return + nil-return tests; site/config args need builders that read them
+
+## 2026-07-18 - QA - COMPLETE
+
+* Work completed
+    - Semantic review vs brief/creative/plan
+    - Surgical systemPatterns update for scope_builders
+    - `.qa-validation-status` = PASS
+* Decisions made
+    - No substantive rework; implementation matches Option B
+* Insights
+    - Empty-skip `next` vs `break` is the load-bearing behavioral edge for multi-scope builders
