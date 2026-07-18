@@ -73,3 +73,12 @@ Implement optional root `llms-full.txt` plus per-category and per-collection sco
 * Insights
     - Layered identical guards survive mutants; one owner per rule is cheaper
     - Explicit creative supersession in the plan prevented path-shape drift
+
+## 2026-07-18 - ARCHIVE - IN-PROGRESS
+
+* Work completed
+    - Leaving REFLECT; entering archive for `category-collection-llms-indexes`
+* Decisions made
+    - Preserve `memory-bank/active/creative/creative-scope-builder-extension.md` for the next run (operator request); do not delete or inline it into this archive
+* Insights
+    - None yet
