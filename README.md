@@ -52,7 +52,7 @@ llms:
 
 - `markdown`: generate sidecars for Markdown sources, link `llms.txt` to those sidecars, and add HTML alternate links. Default: `true`.
 - `llms_txt`: generate `/llms.txt`. Default: `true`.
-- `llms_full`: generate `/llms-full.txt` and scoped `llms-full.txt` when category/collection indexes are enabled. Default: `false`.
+- `llms_full`: generate `/llms-full.txt` and scoped `llms-full.txt` for enabled category/collection indexes and for any scopes contributed via `register_scope_builder`. Default: `false`.
 - `categories`: generate per-category `llms.txt` (and `llms-full.txt` when `llms_full` is true) for each non-empty category after include/exclude filtering. Default: `false`.
 - `collection_indexes`: generate per-collection indexes under `/{label}/` for each included writeable collection (not `pages`/`posts`). Default: `false`.
 - `include`: `pages`, `posts`, and output collection names. Default: `[pages, posts]`.
@@ -61,6 +61,30 @@ llms:
 ### Category paths
 
 Category files land under the category archive path. When `jekyll-archives` configures `permalinks.category`, that template is used (with `:name` replaced by `Jekyll::Utils.slugify` of the category name). Otherwise the default is `/category/:name/`, matching jekyll-archives' stock category permalink. The gem does not require jekyll-archives. Custom archives `slug_mode` values are not mirrored in v1.
+
+### Custom scopes
+
+Sites can register additional scoped write targets (tags, authors, custom archives) without built-in gem support. Builders always run; they are not gated on `categories` or `collection_indexes`. Prefer subsets of the root entry list so membership stays filter-once. Empty scopes are skipped.
+
+```ruby
+# _plugins/llms_tag_scopes.rb
+Jekyll::Llms.register_scope_builder do |site, _config, entries|
+  template = site.config.dig("jekyll-archives", "permalinks", "tag") || "/tags/:name/"
+  site.tags.filter_map do |name, items|
+    scoped = entries.select { |entry| items.include?(entry.item) }
+    next if scoped.empty?
+
+    Jekyll::Llms::Scope.new(
+      path_prefix: template.sub(":name", Jekyll::Utils.slugify(name)),
+      title: name,
+      description: "Tag: #{name}",
+      entries: scoped
+    )
+  end
+end
+```
+
+Authors and other aggregations follow the same pattern: intersect the provided `entries` and return `Scope` objects (or an Array of them).
 
 Per-entry opt-out:
 

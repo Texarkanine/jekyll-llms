@@ -45,10 +45,20 @@ module Jekyll
       end
 
       def write_scopes(markdown_entries)
-        ScopeEnumerator.new(site: site, config: config, entries: entries).scopes.each do |scope|
+        (built_in_scopes + extra_scopes).each do |scope|
+          next if scope.entries.empty?
+
           write_index(markdown_entries, scope: scope, path: "#{scope.path_prefix}llms.txt")
           write_full(scope: scope, path: "#{scope.path_prefix}llms-full.txt") if config.llms_full?
         end
+      end
+
+      def built_in_scopes
+        ScopeEnumerator.new(site: site, config: config, entries: entries).scopes
+      end
+
+      def extra_scopes
+        Llms.scope_builders.flat_map { |builder| Array(builder.call(site, config, entries)) }
       end
 
       def full_entry_pairs(entry_list)

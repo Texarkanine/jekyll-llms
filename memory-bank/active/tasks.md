@@ -29,30 +29,31 @@ Minimal consumer extension: `Jekyll::Llms.register_scope_builder` registry; `Sit
 
 ## Implementation Plan
 
-1. **Registry API tests (failing)**
+1. [x] **Registry API tests (failing)**
    - Files: `test/jekyll_llms_test.rb`, `test/test_helper.rb`
    - Changes: tests for `scope_builders` / `register_scope_builder` / `reset_scope_builders!` (order + reset); global teardown calls `reset_scope_builders!`
 
-2. **Registry API implementation**
+2. [x] **Registry API implementation**
    - Files: `lib/jekyll/llms.rb`
    - Changes: add class methods per creative (`scope_builders`, `register_scope_builder`, `reset_scope_builders!`)
 
-3. **SiteWriter contributed-scope tests (failing)**
+3. [x] **SiteWriter contributed-scope tests (failing)**
    - Files: `test/jekyll/llms/site_writer_test.rb`
    - Changes: register builders that subset entries and assert path writes; cover empty skip, ungated flags, coexistence with categories, `llms_full`, single-Scope return
    - Registration timing: register *before* `build_site` when the post_write hook should fire once; use `build_site_without_plugin_output` + explicit `SiteWriter#write` only when the test must mutate `site.config["llms"]` after process (same pattern as existing full-index tests)
 
-4. **SiteWriter merge implementation**
+4. [x] **SiteWriter merge implementation**
    - Files: `lib/jekyll/llms/site_writer.rb`
    - Changes: `write_scopes` iterates `built_in_scopes + extra_scopes` (or equivalent); `extra_scopes` = `Llms.scope_builders.flat_map { Array(_1.call(site, config, entries)) }`; skip when `scope.entries.empty?`
 
-5. **README consumer docs**
+5. [x] **README consumer docs**
    - Files: `README.md`
    - Changes: short “Custom scopes” section documenting `register_scope_builder` + tag-shaped sketch (authors note optional); clarify not gated on `categories` / `collection_indexes`; note empty scopes skipped; amend the `llms_full` bullet so it mentions contributed scopes too (today it only names category/collection)
 
-6. **Verification**
+6. [x] **Verification**
    - Commands: `bundle exec rake test`, `bundle exec mutant run`
    - Changes: none beyond fixes required for green line + mutation coverage
+   - Result: 79 tests, 100% line, 100% mutation (`reset` uses `nil` for `||=` init; extra tests for Array flatten, nil builders, site/config args, empty-then-nonempty skip)
 
 ## Technology Validation
 
@@ -83,7 +84,7 @@ No new technology - validation not required
 - [x] Technology validation complete
 - [x] Pre-Mortem complete
 - [x] Preflight
-- [ ] Build
+- [x] Build
 - [ ] QA
 
 ## Preflight Amendments

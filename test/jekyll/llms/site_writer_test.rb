@@ -507,7 +507,316 @@ class JekyllLlmsSiteWriterTest < Minitest::Test
     end
   end
 
+  def test_writes_contributed_scopes_from_builders
+    register_title_scope_builder(path_prefix: "/tags/fable/", title: "fable", match_title: "Fable Post")
+
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        ---
+
+        Fable body.
+      MARKDOWN
+      "_posts/2024-01-02-other-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Other Post
+        ---
+
+        Other body.
+      MARKDOWN
+    }) do |_site, destination|
+      index = read_output(destination, "tags/fable/llms.txt")
+      assert_includes index, "# fable"
+      assert_includes index, "> Tag: fable"
+      assert_includes index, "Fable Post"
+      refute_includes index, "Other Post"
+    end
+  end
+
+  def test_writes_contributed_llms_full_when_enabled
+    register_title_scope_builder(path_prefix: "/tags/fable/", title: "fable", match_title: "Fable Post")
+
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "llms_full" => true,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        ---
+
+        Fable body.
+      MARKDOWN
+    }) do |_site, destination|
+      full = read_output(destination, "tags/fable/llms-full.txt")
+      assert_includes full, "# fable"
+      assert_includes full, "## Fable Post"
+      assert_includes full, "Fable body."
+    end
+  end
+
+  def test_skips_empty_contributed_scopes
+    Jekyll::Llms.register_scope_builder do |_site, _config, entries|
+      [
+        Jekyll::Llms::Scope.new(
+          path_prefix: "/tags/empty/",
+          title: "empty",
+          description: "Tag: empty",
+          entries: []
+        ),
+        Jekyll::Llms::Scope.new(
+          path_prefix: "/tags/fable/",
+          title: "fable",
+          description: "Tag: fable",
+          entries: entries.select { |entry| entry.title == "Fable Post" }
+        ),
+      ]
+    end
+
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        ---
+
+        Fable body.
+      MARKDOWN
+    }) do |_site, destination|
+      refute_path_exists output_path(destination, "tags/empty/llms.txt")
+      assert_path_exists output_path(destination, "tags/fable/llms.txt")
+    end
+  end
+
+  def test_contributed_scopes_run_when_built_in_flags_disabled
+    register_title_scope_builder(path_prefix: "/tags/fable/", title: "fable", match_title: "Fable Post")
+
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "categories" => false,
+        "collection_indexes" => false,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        categories: [fable]
+        ---
+
+        Fable body.
+      MARKDOWN
+    }) do |_site, destination|
+      assert_path_exists output_path(destination, "tags/fable/llms.txt")
+      refute_path_exists output_path(destination, "category/fable/llms.txt")
+    end
+  end
+
+  def test_contributed_scopes_coexist_with_built_in_scopes
+    register_title_scope_builder(path_prefix: "/tags/fable/", title: "fable", match_title: "Fable Post")
+
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "categories" => true,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        categories: [fable]
+        ---
+
+        Fable body.
+      MARKDOWN
+    }) do |_site, destination|
+      assert_path_exists output_path(destination, "tags/fable/llms.txt")
+      assert_path_exists output_path(destination, "category/fable/llms.txt")
+    end
+  end
+
+  def test_accepts_single_scope_return_from_builder
+    register_title_scope_builder(path_prefix: "/authors/niko/", title: "niko", match_title: "Fable Post")
+
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        ---
+
+        Fable body.
+      MARKDOWN
+    }) do |_site, destination|
+      assert_path_exists output_path(destination, "authors/niko/llms.txt")
+    end
+  end
+
+  def test_flattens_array_of_scopes_from_builder
+    Jekyll::Llms.register_scope_builder do |_site, _config, entries|
+      %w[Alpha Beta].map do |title|
+        Jekyll::Llms::Scope.new(
+          path_prefix: "/tags/#{title.downcase}/",
+          title: title,
+          description: "Tag: #{title}",
+          entries: entries.select { |entry| entry.title == "#{title} Post" }
+        )
+      end
+    end
+
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-alpha-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Alpha Post
+        ---
+
+        Alpha body.
+      MARKDOWN
+      "_posts/2024-01-02-beta-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Beta Post
+        ---
+
+        Beta body.
+      MARKDOWN
+    }) do |_site, destination|
+      alpha = read_output(destination, "tags/alpha/llms.txt")
+      beta = read_output(destination, "tags/beta/llms.txt")
+      assert_includes alpha, "Alpha Post"
+      refute_includes alpha, "Beta Post"
+      assert_includes beta, "Beta Post"
+      refute_includes beta, "Alpha Post"
+    end
+  end
+
+  def test_ignores_nil_builder_results
+    Jekyll::Llms.register_scope_builder { nil }
+
+    build_site({
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        ---
+
+        Fable body.
+      MARKDOWN
+    }) do |_site, destination|
+      assert_path_exists output_path(destination, "llms.txt")
+    end
+  end
+
+  def test_builder_receives_site_and_config
+    Jekyll::Llms.register_scope_builder do |site, config, entries|
+      Jekyll::Llms::Scope.new(
+        path_prefix: "/custom/#{site.config.fetch('title').downcase.tr(' ', '-')}/",
+        title: site.config.fetch("title"),
+        description: config.llms_full? ? "full" : "index",
+        entries: entries
+      )
+    end
+
+    build_site({
+      "title" => "Fixture Site",
+      "llms" => {
+        "markdown" => true,
+        "llms_txt" => true,
+        "llms_full" => false,
+        "include" => %w[posts],
+        "exclude" => [],
+      },
+    }, {
+      "_layouts/default.html" => default_layout,
+      "_posts/2024-01-01-fable-post.md" => <<~MARKDOWN,
+        ---
+        layout: default
+        title: Fable Post
+        ---
+
+        Fable body.
+      MARKDOWN
+    }) do |_site, destination|
+      index = read_output(destination, "custom/fixture-site/llms.txt")
+      assert_includes index, "# Fixture Site"
+      assert_includes index, "> index"
+    end
+  end
+
   private
+
+  def register_title_scope_builder(path_prefix:, title:, match_title:)
+    Jekyll::Llms.register_scope_builder do |_site, _config, entries|
+      scoped = entries.select { |entry| entry.title == match_title }
+      Jekyll::Llms::Scope.new(
+        path_prefix: path_prefix,
+        title: title,
+        description: "Tag: #{title}",
+        entries: scoped
+      )
+    end
+  end
 
   def default_layout
     "<html><head><title>{{ page.title }}</title></head><body>{{ content }}</body></html>\n"

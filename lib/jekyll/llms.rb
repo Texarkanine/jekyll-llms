@@ -21,6 +21,23 @@ module Jekyll
       def write(site)
         SiteWriter.new(site).write
       end
+
+      # Ordered callables `(site, config, entries) -> Array<Scope>` (or a single Scope).
+      # Consumers register builders to contribute scoped llms.txt / llms-full.txt write targets.
+      def scope_builders
+        @scope_builders ||= []
+      end
+
+      # Appends a scope builder. Returns the block for optional disposal by the caller.
+      def register_scope_builder(&block)
+        scope_builders << block
+        block
+      end
+
+      # Clears all registered builders. Intended for tests and process-local reset.
+      def reset_scope_builders!
+        @scope_builders = nil
+      end
     end
   end
 end
